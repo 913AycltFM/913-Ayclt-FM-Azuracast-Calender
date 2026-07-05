@@ -6,7 +6,7 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
-# Grants write permission so the runner can safely update the release asset
+# Grants explicit write permissions so the runner can update your release asset
 permissions:
   contents: write
 
@@ -22,11 +22,13 @@ jobs:
       with:
         python-version: '3.10'
 
+    # Executes your script to generate the azuracast_schedule.ics file
     - name: Run schedule exporter
       run: python export_schedule.py
 
+    # Safely overwrites the calendar asset in your release without adding git commits
     - name: Upload Calendar to Release
-      uses: softprops/action-gh-release@v3
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: calendar-data
         name: Live AzuraCast Calendar
