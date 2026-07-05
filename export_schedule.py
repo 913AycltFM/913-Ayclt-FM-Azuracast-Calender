@@ -48,7 +48,7 @@ def fold_line(line):
 def fetch_schedule(station_id):
     now = datetime.now(timezone.utc)
     start_date = now.strftime("%Y-%m-%d")
-    end_date = (now + timedelta(days=30)).strftime("%Y-%m-%d")
+    end_date = (now + timedelta(days=7)).strftime("%Y-%m-%d")
     
     url = f"{AZURACAST_URL}/api/station/{station_id}/schedule?start={start_date}&end={end_date}"
     try:
