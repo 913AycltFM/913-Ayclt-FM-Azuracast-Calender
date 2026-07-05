@@ -6,6 +6,10 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
+# Grants write permission so the runner can safely update the release asset
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,10 +25,11 @@ jobs:
     - name: Run schedule exporter
       run: python export_schedule.py
 
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "actions@github.com"
-        git add azuracast_schedule.ics
-        git diff-index --quiet HEAD || git commit -m "Automated calendar update for all stations"
-        git push
+    - name: Upload Calendar to Release
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: calendar-data
+        name: Live AzuraCast Calendar
+        draft: false
+        prerelease: false
+        files: azuracast_schedule.ics
