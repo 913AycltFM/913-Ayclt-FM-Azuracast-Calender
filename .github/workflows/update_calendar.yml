@@ -2,36 +2,32 @@ name: Update AzuraCast iCal
 
 on:
   schedule:
-    # Runs exactly every 5 minutes (GitHub cron syntax)
+    # Runs exactly every 5 minutes (subject to GitHub cron system queue latency)
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
-# Grants explicit write permissions so the runner can update your release asset
 permissions:
   contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    # Executes your script to generate the azuracast_schedule.ics file
-    - name: Run schedule exporter
-      run: python export_schedule.py
+      - name: Run schedule exporter
+        run: python export_schedule.py
 
-    # Safely overwrites the calendar asset in your release without adding git commits
-    - name: Upload Calendar to Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: calendar-data
-        name: Live AzuraCast Calendar
-        draft: false
-        prerelease: false
-        files: azuracast_schedule.ics
+      # Native GitHub CLI reliably drops the old file and force-uploads the new one
+      - name: Force Overwrite Calendar Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload calendar-data azuracast_schedule.ics --clobber
