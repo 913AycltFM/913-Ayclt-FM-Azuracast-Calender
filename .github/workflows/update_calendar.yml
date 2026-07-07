@@ -22,8 +22,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      # Executes your script to grab fresh data from AzuraCast
+      # Passes your secure API credential into the execution workspace
       - name: Run schedule exporter
+        env:
+          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
         run: python export_schedule.py
 
       # Native GitHub CLI reliably drops the old file and force-uploads the new one
@@ -33,11 +35,11 @@ jobs:
         run: |
           gh release upload calendar-data azuracast_schedule.ics --clobber
 
-      # Native Keep-Alive: Safely logs a timestamp to prevent the 6-min cron from falling asleep
+      # Native Keep-Alive: Logs a timestamp tracking file to keep the 6-min cron active
       - name: Keep Workflow Active
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]@://github.com"
           mkdir -p .github/logs
           date +%Y-%m-%dT%H:%M:%SZ > .github/logs/heartbeat.log
           git add .github/logs/heartbeat.log
