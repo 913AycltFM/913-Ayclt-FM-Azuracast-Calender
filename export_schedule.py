@@ -5,7 +5,7 @@ import os
 import re
 
 # --- CONFIGURATION ---
-AZURACAST_URL = "https://913aycltfm.com"
+AZURACAST_URL = "https://radio.913aycltfm.com"
 STATIONS = {
     "1": {   # Replace with the actual database ID number for this station
         "name": "91.3 Ayclt FM",
