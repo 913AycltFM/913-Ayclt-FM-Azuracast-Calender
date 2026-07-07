@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: '3.10'
 
+      # Executes your script to grab fresh data from AzuraCast
       - name: Run schedule exporter
         run: python export_schedule.py
 
@@ -32,6 +33,12 @@ jobs:
         run: |
           gh release upload calendar-data azuracast_schedule.ics --clobber
 
-      # Keeps repository marked active so GitHub never pauses your cron schedule
+      # Native Keep-Alive: Safely logs a timestamp to prevent the 6-min cron from falling asleep
       - name: Keep Workflow Active
-        uses: gautamkrishnar/keepalive-workflow@v1
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p .github/logs
+          date +%Y-%m-%dT%H:%M:%SZ > .github/logs/heartbeat.log
+          git add .github/logs/heartbeat.log
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: workflow heartbeat [skip ci]" && git push)
