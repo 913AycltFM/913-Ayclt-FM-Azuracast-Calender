@@ -2,8 +2,8 @@ name: Update AzuraCast iCal
 
 on:
   schedule:
-    # Runs exactly every 5 minutes
-    - cron: '*/5 * * * *'
+    # Runs exactly every 6 minutes (subject to GitHub queue latency)
+    - cron: '*/6 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -25,11 +25,13 @@ jobs:
       - name: Run schedule exporter
         run: python export_schedule.py
 
-      - name: Upload Calendar to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: calendar-data
-          name: Live AzuraCast Calendar
-          draft: false
-          prerelease: false
-          files: azuracast_schedule.ics
+      # Native GitHub CLI reliably drops the old file and force-uploads the new one
+      - name: Force Overwrite Calendar Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload calendar-data azuracast_schedule.ics --clobber
+
+      # Keeps repository marked active so GitHub never pauses your cron schedule
+      - name: Keep Workflow Active
+        uses: gautamkrishnar/keepalive-workflow@v1
