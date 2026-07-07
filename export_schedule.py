@@ -6,7 +6,6 @@ import re
 
 # --- CONFIGURATION ---
 AZURACAST_URL = "https://radio.913aycltfm.com"
-
 STATIONS = {
     "91.3_ayclt_fm": {
         "name": "91.3 Ayclt FM",
@@ -21,7 +20,6 @@ STATIONS = {
         "public_url": f"{AZURACAST_URL}/public/91.3_ayclt_fm_hd3"
     }
 }
-
 OUTPUT_FILE = "azuracast_schedule.ics"
 # ---------------------
 
@@ -50,10 +48,13 @@ def fetch_schedule(station_id):
     start_date = now.strftime("%Y-%m-%d")
     end_date = (now + timedelta(days=7)).strftime("%Y-%m-%d")
     
-    url = f"{AZURACAST_URL}/api/station/{station_id}/schedule?start={start_date}&end={end_date}"
+    # Appended a dynamic timestamp query parameter to bypass AzuraCast server-side API caching
+    cache_bust = int(now.timestamp())
+    url = f"{AZURACAST_URL}/api/station/{station_id}/schedule?start={start_date}&end={end_date}&_={cache_bust}"
+    
     try:
         req = urllib.request.Request(url, headers={'User-Agent': '913AycltFM-iCal-Exporter'})
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=15) as response:
             return json.loads(response.read().decode())
     except Exception as e:
         print(f"Error fetching station {station_id}: {e}")
@@ -88,13 +89,12 @@ def main():
         schedule_data = fetch_schedule(station_id)
         
         for event in schedule_data:
-            # LIVE DJ FILTER CHECK
-            # AzuraCast tags live streamer blocks as 'streamer'. If it's a 'playlist', we skip it.
-            event_type = event.get("type", "").lower()
-            if event_type != "streamer":
+            # FIX: AzuraCast assigns a boolean field 'is_streamer' to flag direct live DJ connections
+            is_streamer = event.get("is_streamer", False)
+            if not is_streamer:
                 continue
                 
-            summary = clean_text(event.get("name"))
+            summary = clean_text(event.get("name") or event.get("title"))
             start_ts = event.get("start_timestamp")
             end_ts = event.get("end_timestamp")
             
@@ -123,9 +123,8 @@ def main():
             
             for line in event_lines:
                 ics_lines.append(fold_line(line))
-                
             event_count += 1
-            
+
     if event_count == 0:
         fallback_start = datetime.now(timezone.utc).strftime("%Y%m%dT%H0000Z")
         fallback_end = datetime.now(timezone.utc).strftime("%Y%m%dT%H3000Z")
@@ -141,13 +140,12 @@ def main():
         ]
         for line in fallback_lines:
             ics_lines.append(fold_line(line))
-            
+
     ics_lines.append("END:VCALENDAR")
     
     print(f"Writing {max(event_count, 1)} live DJ events to the single iCalendar file...")
     with open(OUTPUT_FILE, "w", encoding="utf-8", newline="") as f:
         f.write("\r\n".join(ics_lines) + "\r\n")
-        
     print(f"Successfully saved live DJ schedule to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
