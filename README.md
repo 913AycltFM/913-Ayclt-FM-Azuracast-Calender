@@ -1,18 +1,18 @@
-# 91.3 AYCLT FM — AzuraCast Calendar
+# 91.3 Ayclt FM — AzuraCast Calendar
 
 Automated rolling 7-day programming calendar for 91.3 AYCLT FM, HD2, and HD3.
 
 ## What it does
 
-This project connects to the 91.3 AYCLT FM AzuraCast API, retrieves the station programming schedule, and generates an iCalendar (`.ics`) file.
+This project connects to the 91.3 Ayclt FM AzuraCast API, retrieves the station programming schedule, and generates an iCalendar (`.ics`) file.
 
 The calendar is automatically updated **every 5 minutes** with GitHub Actions.
 
 ## Included stations
 
-- 91.3 AYCLT FM
-- 91.3 AYCLT FM HD2
-- 91.3 AYCLT FM HD3
+- 91.3 Ayclt FM
+- 91.3 Ayclt FM HD2
+- 91.3 Ayclt FM HD3
 
 ## Features
 
@@ -64,6 +64,6 @@ Before the calendar is published, the workflow checks that:
 - Required UTC timestamp fields are valid.
 - The generated calendar can be read successfully.
 
-## 91.3 AYCLT FM
+## 91.3 Ayclt FM
 
-This project is maintained for the 91.3 AYCLT FM station programming schedule and its associated HD channels.
+This project is maintained for the 91.3 Ayclt FM station programming schedule and its associated HD channels.
