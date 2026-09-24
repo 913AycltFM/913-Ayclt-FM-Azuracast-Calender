@@ -1,6 +1,8 @@
 import json
 import os
 import re
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -16,23 +18,28 @@ ALLOWED_SHORTCODES = [
 ]
 
 WINDOW_HOURS = 24 * 7
+HTTP_TIMEOUT = 30
+HTTP_RETRIES = 3
 
 
 def clean_text(value, fallback="Scheduled Programming"):
     text = str(value or "").strip()
     if not text:
         return fallback
-    text = re.sub(r"[\x00-\x1F\x7F]", "", text)
+
+    # Remove characters that iCalendar does not allow in text values.
+    text = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", text)
+    text = text.replace("\r", " ").replace("\n", " ")
+
     return (
         text.replace("\\", "\\\\")
         .replace(";", "\\;")
         .replace(",", "\\,")
-        .replace("\n", " ")
-        .replace("\r", " ")
     ).strip()
 
 
 def fold_line(line):
+    """Fold an iCalendar content line at 75 UTF-8 octets."""
     if len(line.encode("utf-8")) <= 75:
         return line
 
@@ -56,6 +63,9 @@ def fold_line(line):
             except UnicodeDecodeError:
                 cut -= 1
 
+        if cut == 0:
+            raise ValueError("Unable to safely fold UTF-8 iCalendar line.")
+
         parts.append(piece if first else " " + piece)
         remaining = remaining[len(piece):]
         first = False
@@ -65,9 +75,10 @@ def fold_line(line):
 
 def build_request(url):
     headers = {
-        "User-Agent": "913AycltFM-AzuraCast-iCal/2.0",
+        "User-Agent": "913AycltFM-AzuraCast-iCal/3.0",
         "Accept": "application/json",
         "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
     }
     if API_KEY:
         headers["Authorization"] = f"Bearer {API_KEY}"
@@ -75,18 +86,62 @@ def build_request(url):
 
 
 def get_json(url):
-    request = build_request(url)
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return json.loads(response.read().decode("utf-8"))
+    last_error = None
+
+    for attempt in range(1, HTTP_RETRIES + 1):
+        try:
+            request = build_request(url)
+            with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
+                raw = response.read().decode("utf-8")
+                return json.loads(raw)
+
+        except urllib.error.HTTPError as exc:
+            last_error = exc
+
+            # Retry rate limits and temporary server failures.
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == HTTP_RETRIES:
+                raise
+
+            retry_after = exc.headers.get("Retry-After")
+            try:
+                delay = max(1, min(int(retry_after), 15)) if retry_after else 2 ** (attempt - 1)
+            except (TypeError, ValueError):
+                delay = 2 ** (attempt - 1)
+
+            print(
+                f"HTTP {exc.code} from AzuraCast; "
+                f"retrying in {delay}s (attempt {attempt}/{HTTP_RETRIES})..."
+            )
+            time.sleep(delay)
+
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+            last_error = exc
+
+            if attempt == HTTP_RETRIES:
+                raise
+
+            delay = 2 ** (attempt - 1)
+            print(
+                f"Temporary AzuraCast/API error: {exc}; "
+                f"retrying in {delay}s (attempt {attempt}/{HTTP_RETRIES})..."
+            )
+            time.sleep(delay)
+
+    raise RuntimeError(f"Unable to fetch JSON from {url}: {last_error}")
 
 
 def get_filtered_stations():
     stations_data = get_json(f"{AZURACAST_URL}/api/stations")
+
     if not isinstance(stations_data, list):
         raise RuntimeError("AzuraCast /api/stations did not return a list.")
 
     stations = {}
+
     for station in stations_data:
+        if not isinstance(station, dict):
+            continue
+
         shortcode = str(station.get("shortcode", "")).strip()
         if shortcode not in ALLOWED_SHORTCODES:
             continue
@@ -95,14 +150,20 @@ def get_filtered_stations():
         if not station_id:
             raise RuntimeError(f"Approved station '{shortcode}' has no ID.")
 
+        if station_id in stations:
+            raise RuntimeError(
+                f"Duplicate AzuraCast station ID '{station_id}' detected."
+            )
+
         stations[station_id] = {
             "name": str(station.get("name") or shortcode).strip(),
             "shortcode": shortcode,
             "public_url": f"{AZURACAST_URL}/public/{shortcode}",
         }
 
-    found = {v["shortcode"] for v in stations.values()}
-    missing = [s for s in ALLOWED_SHORTCODES if s not in found]
+    found = {station["shortcode"] for station in stations.values()}
+    missing = [shortcode for shortcode in ALLOWED_SHORTCODES if shortcode not in found]
+
     if missing:
         raise RuntimeError(
             "Approved station(s) not found in AzuraCast: " + ", ".join(missing)
@@ -112,44 +173,65 @@ def get_filtered_stations():
 
 
 def fetch_schedule(station_id, start_dt, end_dt):
-    params = urllib.parse.urlencode({
-        "start": start_dt.isoformat(),
-        "end": end_dt.isoformat(),
-        "_": int(datetime.now(timezone.utc).timestamp()),
-    })
+    params = urllib.parse.urlencode(
+        {
+            "start": start_dt.isoformat(),
+            "end": end_dt.isoformat(),
+            "_": int(datetime.now(timezone.utc).timestamp()),
+        }
+    )
+
     url = f"{AZURACAST_URL}/api/station/{station_id}/schedule?{params}"
     data = get_json(url)
 
+    if isinstance(data, list):
+        return data
+
     if isinstance(data, dict):
         for key in ("schedule", "data", "items", "results"):
-            if isinstance(data.get(key), list):
-                return data[key]
-        return []
+            value = data.get(key)
+            if isinstance(value, list):
+                return value
 
-    if not isinstance(data, list):
-        raise RuntimeError(f"Unexpected schedule response for station {station_id}.")
-
-    return data
+    raise RuntimeError(
+        f"Unexpected schedule response for station {station_id}: "
+        f"{type(data).__name__}"
+    )
 
 
 def timestamp_to_datetime(value):
     if value is None or value == "":
         return None
 
+    if isinstance(value, bool):
+        return None
+
     if isinstance(value, (int, float)):
         return datetime.fromtimestamp(value, tz=timezone.utc)
 
     text = str(value).strip()
-    if text.isdigit():
-        return datetime.fromtimestamp(int(text), tz=timezone.utc)
 
-    dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    if not text:
+        return None
+
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", text):
+        return datetime.fromtimestamp(float(text), tz=timezone.utc)
+
+    try:
+        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
+
     return dt.astimezone(timezone.utc)
 
 
 def event_times(event):
+    if not isinstance(event, dict):
+        return None, None
+
     start_value = (
         event.get("start_timestamp")
         if event.get("start_timestamp") is not None
@@ -175,14 +257,28 @@ def format_ical_date(dt):
 
 
 def stable_uid(station_id, event, start_dt, end_dt):
-    event_id = str(event.get("id") or event.get("schedule_id") or "event")
+    event_id = str(
+        event.get("id")
+        or event.get("schedule_id")
+        or event.get("station_schedule_id")
+        or "event"
+    )
+
     start = int(start_dt.timestamp())
     end = int(end_dt.timestamp())
+
     return f"ayclt-{station_id}-{event_id}-{start}-{end}@913aycltfm"
 
 
 def make_event(station_id, station, event, start_dt, end_dt):
-    name = event.get("name") or event.get("title") or "Scheduled Programming"
+    name = (
+        event.get("name")
+        or event.get("title")
+        or event.get("playlist_name")
+        or event.get("streamer_name")
+        or "Scheduled Programming"
+    )
+
     summary = clean_text(f"[{station['name']}] {name}")
 
     lines = [
@@ -195,6 +291,7 @@ def make_event(station_id, station, event, start_dt, end_dt):
         f"LOCATION:{station['public_url']}",
         "END:VEVENT",
     ]
+
     return [fold_line(line) for line in lines]
 
 
@@ -213,6 +310,7 @@ def main():
 
     for station_id, station in stations.items():
         print(f"Fetching {station['name']} ({station['shortcode']})...")
+
         try:
             schedule_data = fetch_schedule(station_id, now, window_end)
         except Exception as exc:
@@ -220,20 +318,30 @@ def main():
                 f"Could not fetch schedule for {station['shortcode']}: {exc}"
             ) from exc
 
+        print(f"  AzuraCast returned {len(schedule_data)} schedule records.")
+
         for event in schedule_data:
             start_dt, end_dt = event_times(event)
+
             if not start_dt or not end_dt:
                 continue
 
+            # Keep events that overlap the exact rolling 7-day window.
             if end_dt <= now or start_dt >= window_end:
                 continue
 
             key = (
                 station_id,
-                str(event.get("id") or event.get("schedule_id") or ""),
+                str(
+                    event.get("id")
+                    or event.get("schedule_id")
+                    or event.get("station_schedule_id")
+                    or ""
+                ),
                 int(start_dt.timestamp()),
                 int(end_dt.timestamp()),
             )
+
             if key in seen:
                 continue
 
@@ -242,6 +350,14 @@ def main():
 
     events.sort(key=lambda item: (item[0], item[2], item[1]))
 
+    # Fail loudly if duplicate UIDs would be generated.
+    uids = set()
+    for start_dt, end_dt, station_id, station, event in events:
+        uid = stable_uid(station_id, event, start_dt, end_dt)
+        if uid in uids:
+            raise RuntimeError(f"Duplicate iCalendar UID generated: {uid}")
+        uids.add(uid)
+
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
@@ -249,7 +365,8 @@ def main():
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
         "X-WR-CALNAME:91.3 Ayclt FM",
-        "X-WR-TIMEZONE:America/Chicago",
+        # DTSTART/DTEND are explicit UTC values ending in Z.
+        # Do not declare a conflicting X-WR-TIMEZONE.
     ]
 
     for start_dt, end_dt, station_id, station, event in events:
