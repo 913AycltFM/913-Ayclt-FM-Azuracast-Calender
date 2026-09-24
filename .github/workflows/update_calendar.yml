@@ -1,46 +1,65 @@
-name: Update AzuraCast iCal
+name: Update AzuraCast Calendar
 
 on:
   schedule:
-    # Runs exactly every 6 minutes (subject to GitHub queue latency)
-    - cron: '*/6 * * * *'
+    # Every 15 minutes, offset from the top of the hour to reduce GitHub queue delays.
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: azuracast-calendar
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.12"
 
-      # Passes your secure API credential into the execution workspace
-      - name: Run schedule exporter
+      - name: Generate rolling 7-day calendar
         env:
           AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
-        run: python export_schedule.py
+        run: |
+          python export_schedule.py
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("azuracast_schedule.ics")
+          data = p.read_text(encoding="utf-8")
+          if not data.startswith("BEGIN:VCALENDAR") or not data.rstrip().endswith("END:VCALENDAR"):
+              raise SystemExit("Generated calendar failed basic iCalendar validation.")
+          if "BEGIN:VEVENT" not in data:
+              print("Warning: no scheduled events were returned.")
+          print(f"Calendar size: {p.stat().st_size} bytes")
+          PY
 
-      # Native GitHub CLI reliably drops the old file and force-uploads the new one
-      - name: Force Overwrite Calendar Release Asset
+      - name: Commit calendar to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- azuracast_schedule.ics; then
+            echo "Calendar content did not change; no commit needed."
+          else
+            git add azuracast_schedule.ics
+            git commit -m "chore: update AzuraCast calendar"
+            git push origin HEAD:main
+          fi
+
+      - name: Update calendar release asset
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload calendar-data azuracast_schedule.ics --clobber
-
-      # Native Keep-Alive: Logs a timestamp tracking file to keep the 6-min cron active
-      - name: Keep Workflow Active
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
-          mkdir -p .github/logs
-          date +%Y-%m-%dT%H:%M:%SZ > .github/logs/heartbeat.log
-          git add .github/logs/heartbeat.log
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: workflow heartbeat [skip ci]" && git push)
