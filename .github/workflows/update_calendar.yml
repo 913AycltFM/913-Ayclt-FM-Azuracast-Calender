@@ -2,8 +2,8 @@ name: Update AzuraCast Calendar
 
 on:
   schedule:
-    # Every 15 minutes, offset from the top of the hour to reduce GitHub queue delays.
-    - cron: "7,22,37,52 * * * *"
+    # Every 5 minutes.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
