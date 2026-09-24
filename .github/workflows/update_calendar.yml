@@ -16,7 +16,7 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -29,20 +29,53 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate rolling 7-day calendar
+      - name: Generate and validate rolling 7-day calendar
         env:
           AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
         run: |
+          echo "===== CALENDAR UPDATE START ====="
+          echo "UTC time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           python export_schedule.py
+
           python - <<'PY'
           from pathlib import Path
+          import re
+
           p = Path("azuracast_schedule.ics")
           data = p.read_text(encoding="utf-8")
-          if not data.startswith("BEGIN:VCALENDAR") or not data.rstrip().endswith("END:VCALENDAR"):
-              raise SystemExit("Generated calendar failed basic iCalendar validation.")
-          if "BEGIN:VEVENT" not in data:
-              print("Warning: no scheduled events were returned.")
-          print(f"Calendar size: {p.stat().st_size} bytes")
+          lines = data.splitlines()
+
+          if not lines or lines[0] != "BEGIN:VCALENDAR":
+              raise SystemExit("Invalid calendar: missing BEGIN:VCALENDAR.")
+          if lines[-1] != "END:VCALENDAR":
+              raise SystemExit("Invalid calendar: missing END:VCALENDAR.")
+
+          event_count = sum(1 for line in lines if line == "BEGIN:VEVENT")
+          end_event_count = sum(1 for line in lines if line == "END:VEVENT")
+          if event_count != end_event_count:
+              raise SystemExit(f"Invalid calendar: VEVENT mismatch {event_count}/{end_event_count}.")
+          if event_count == 0:
+              print("WARNING: no scheduled events were returned.")
+
+          uids = [line[4:] for line in lines if line.startswith("UID:")]
+          if len(uids) != event_count:
+              raise SystemExit(f"Invalid calendar: expected {event_count} UID fields, found {len(uids)}.")
+          if len(uids) != len(set(uids)):
+              raise SystemExit("Invalid calendar: duplicate UID detected.")
+
+          timestamp_fields = 0
+          for line in lines:
+              if line.startswith(("DTSTART:", "DTEND:", "DTSTAMP:")):
+                  value = line.split(":", 1)[1]
+                  if not re.fullmatch(r"\d{8}T\d{6}Z", value):
+                      raise SystemExit(f"Invalid UTC timestamp: {line}")
+                  timestamp_fields += 1
+
+          if timestamp_fields != event_count * 3:
+              raise SystemExit("Invalid calendar: unexpected timestamp field count.")
+
+          print(f"Validated calendar: {event_count} VEVENT(s), {p.stat().st_size} bytes.")
+          print("===== CALENDAR VALIDATION PASSED =====")
           PY
 
       - name: Commit calendar to main
@@ -56,10 +89,16 @@ jobs:
             git add azuracast_schedule.ics
             git commit -m "chore: update AzuraCast calendar"
             git push origin HEAD:main
+            echo "Calendar commit pushed successfully."
+            git log -1 --oneline
           fi
 
       - name: Update calendar release asset
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Uploading azuracast_schedule.ics to release calendar-data..."
           gh release upload calendar-data azuracast_schedule.ics --clobber
+          echo "Release asset upload completed successfully."
+          gh release view calendar-data --json name,tagName,url,assets
+          echo "===== CALENDAR UPDATE COMPLETE ====="
