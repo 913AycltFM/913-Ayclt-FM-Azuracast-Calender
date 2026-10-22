@@ -205,4 +205,13 @@ DTEND:20261029T020000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-56-1793275200-1793282400@913aycltfm
+DTSTAMP:20261022T000000Z
+DTSTART:20261029T120000Z
+DTEND:20261029T140000Z
+SUMMARY:[91.3 Ayclt FM] Best Of JB In the Morning (Thursday Morning Edition
+ )
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+END:VEVENT
 END:VCALENDAR
