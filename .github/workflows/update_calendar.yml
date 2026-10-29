@@ -16,7 +16,7 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - name: Checkout repository
@@ -67,7 +67,7 @@ jobs:
           for line in lines:
               if line.startswith(("DTSTART:", "DTEND:", "DTSTAMP:")):
                   value = line.split(":", 1)[1]
-                  if not re.fullmatch(r"\d{8}T\d{6}Z", value):
+                  if not re.fullmatch(r"\\d{8}T\\d{6}Z", value):
                       raise SystemExit(f"Invalid UTC timestamp: {line}")
                   timestamp_fields += 1
 
@@ -77,6 +77,18 @@ jobs:
           print(f"Validated calendar: {event_count} VEVENT(s), {p.stat().st_size} bytes.")
           print("===== CALENDAR VALIDATION PASSED =====")
           PY
+
+      - name: Publish or update Discord scheduled events
+        env:
+          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        run: |
+          if [ -z "$DISCORD_BOT_TOKEN" ] || [ -z "$DISCORD_GUILD_ID" ]; then
+            echo "Discord publishing skipped: add DISCORD_BOT_TOKEN and DISCORD_GUILD_ID repository secrets to enable it."
+          else
+            python publish_discord_events.py
+          fi
 
       - name: Commit calendar to main
         run: |
