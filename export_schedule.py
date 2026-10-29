@@ -158,9 +158,8 @@ def stable_uid(station_id, event, start_dt, end_dt):
 def ical_text(value, fallback=""):
     """Escape user/API text for an iCalendar TEXT property."""
     text = str(value or fallback).strip()
-    text = re.sub(r"[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]", "", text)
-    return text.replace("\\\\", "\\\\\\\\").replace("\\r\\n", "\\n").replace("\\r", "\\n").replace("\\n", "\\\\n").replace(";", "\\\\;").replace(",", "\\\\,")
-
+    text = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", text)
+    return text.replace("\\", "\\\\").replace("\r\n", "\n").replace("\r", "\n").replace("\n", "\\n").replace(";", "\\;").replace(",", "\\,")
 def first_value(*values):
     for value in values:
         if value is not None and str(value).strip():
