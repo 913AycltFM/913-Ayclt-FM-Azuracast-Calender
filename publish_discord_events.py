@@ -135,11 +135,18 @@ def main():
     existing = discord_request("GET", guild_path)
     existing = existing if isinstance(existing, list) else []
     by_key = {}
+    by_identity = {}
     for item in existing:
+        # Keep compatibility with events created by the older script.
         description = item.get("description") or ""
         for line in description.splitlines():
             if line.startswith("AzuraCast event key: "):
                 by_key[line.split(": ", 1)[1].strip()] = item
+        identity = (
+            str(item.get("name") or ""),
+            str(item.get("scheduled_start_time") or ""),
+        )
+        by_identity[identity] = item
     created = updated = skipped = 0
 
     for station in stations:
@@ -159,16 +166,8 @@ def main():
             title = str(event.get("name") or event.get("title") or event.get("playlist_name") or event.get("streamer_name") or "Scheduled Programming").strip()
             dj = str(event.get("streamer_name") or event.get("dj_name") or "").strip()
             key = event_key(station_id, event, start, finish)
-            details = [
-                f"Station: {station_name}",
-                f"Show: {title}",
-            ]
-            if dj:
-                details.append(f"DJ: {dj}")
-            details.extend([f"Listen live: {listen_url}", f"AzuraCast event key: {key}"])
             payload = {
                 "name": f"{station_name} — {title}"[:100],
-                "description": "\n".join(details)[:1000],
                 "privacy_level": 2,
                 "entity_type": 3,
                 "scheduled_start_time": start.isoformat().replace("+00:00", "Z"),
@@ -178,7 +177,10 @@ def main():
             art = artwork_data(station_id, event)
             if art:
                 payload["image"] = art
-            old = by_key.get(key)
+            old = by_key.get(key) or by_identity.get((
+                payload["name"],
+                payload["scheduled_start_time"],
+            ))
             try:
                 if old:
                     # Do not replace an existing cover image when AzuraCast has no new artwork.
