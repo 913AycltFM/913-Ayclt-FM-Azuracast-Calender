@@ -168,7 +168,7 @@ def first_value(*values):
 
 def normalize_name(value):
     value = str(value or "").casefold()
-    value = re.sub(r"\\b(dj|the|show|with)\\b", " ", value)
+    value = re.sub(r"\b(dj|the|show|with)\b", " ", value)
     return re.sub(r"[^a-z0-9]+", "", value)
 
 def fetch_streamers(station_id, station_name):
@@ -237,7 +237,7 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     description_parts.append(f"Listen live: {station['public_url']}")
     if art_url:
         description_parts.append(f"DJ artwork: {art_url}")
-    description = ical_text("\\n".join(description_parts))
+    description = ical_text("\n".join(description_parts))
     lines = ["BEGIN:VEVENT", f"UID:{stable_uid(station_id, event, start_dt, end_dt)}",
              f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
