@@ -23,7 +23,8 @@ Connects to the 91.3 Ayclt FM AzuraCast API, retrieves station schedules, and ge
 - Automatic GitHub release asset updates
 - Discord Scheduled Events publishing, with create/update matching to avoid duplicate events
 - DJ/streamer cover art fetched from the AzuraCast streamer artwork endpoint when the schedule data includes a streamer ID
-- Event descriptions include station, show, DJ (when available), and listen link
+- ICS event descriptions include station, show, DJ/host (when available), listen link, and the AzuraCast DJ artwork URL when the schedule record includes a streamer ID
+- The ICS file links to DJ artwork in the event description; many calendar apps do not display remote images inline
 
 ## Generated calendar
 
