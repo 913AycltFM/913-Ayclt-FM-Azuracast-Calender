@@ -16,6 +16,7 @@ API_KEY = os.environ.get("AZURACAST_API_KEY", "").strip()
 SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3"]
 WINDOW_DAYS = 7
 TIMEOUT = 25
+DEFAULT_COVER_URL = f"{AZURACAST_URL}/api/station/1/streamer/13/art"
 
 
 def request_json(url, headers=None, data=None, method=None):
@@ -175,13 +176,16 @@ def artwork_data(station_id, event, profiles):
         print(f"  Using streamer ID {sid} from schedule metadata.")
     else:
         label = next((str(value).strip() for value in candidates if value), "this event")
-        print(f"  No matching DJ artwork profile for '{label}'.")
-        return None
-
-    url = (
-        f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id))}"
-        f"/streamer/{urllib.parse.quote(sid)}/art"
-    )
+        print(
+            f"  No matching DJ artwork profile for '{label}'. "
+            "Using the configured Nicko cover image as fallback."
+        )
+        url = DEFAULT_COVER_URL
+    if matched or sid:
+        url = (
+            f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id))}"
+            f"/streamer/{urllib.parse.quote(sid)}/art"
+        )
     headers = {"User-Agent": "913AycltFM-AzuraCast-Discord-Events/1.0"}
     if API_KEY:
         headers["Authorization"] = f"Bearer {API_KEY}"
