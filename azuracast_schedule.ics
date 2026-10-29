@@ -6,13 +6,10 @@ METHOD:PUBLISH
 X-WR-CALNAME:91.3 Ayclt FM
 BEGIN:VEVENT
 UID:ayclt-1-78-1793314800-1793329200@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261029T230000Z
 DTEND:20261030T030000Z
 SUMMARY:[91.3 Ayclt FM] DJ Nicko
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ Nicko\nDJ/Host: DJ Nicko\nList
- en live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: ht
- tps://radio.913aycltfm.com/api/station/1/streamer/13/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -20,25 +17,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793322000-1793325600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261030T010000Z
 DTEND:20261030T020000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-48-1793365200-1793372400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261030T130000Z
 DTEND:20261030T150000Z
 SUMMARY:[91.3 Ayclt FM] JB In The Morning
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: JB In The Morning \nDJ/Host: JB I
- n The Morning\nListen live: https://radio.913aycltfm.com/public/91.3_ayclt
- _fm\nDJ artwork: https://radio.913aycltfm.com/api/station/1/streamer/10/ar
- t
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -46,13 +37,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-58-1793372400-1793379600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261030T150000Z
 DTEND:20261030T170000Z
 SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ WolfDen\nDJ/Host: DJ WolfDen\n
- Listen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork
- : https://radio.913aycltfm.com/api/station/1/streamer/11/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -60,13 +48,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-64-1793383200-1793390400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261030T180000Z
 DTEND:20261030T200000Z
 SUMMARY:[91.3 Ayclt FM] Rock Doc
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: Rock Doc\nDJ/Host: Rock Doc\nList
- en live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: ht
- tps://radio.913aycltfm.com/api/station/1/streamer/12/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -74,13 +59,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-78-1793401200-1793415600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261030T230000Z
 DTEND:20261031T030000Z
 SUMMARY:[91.3 Ayclt FM] DJ Nicko
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ Nicko\nDJ/Host: DJ Nicko\nList
- en live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: ht
- tps://radio.913aycltfm.com/api/station/1/streamer/13/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -88,24 +70,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793408400-1793412000@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261031T010000Z
 DTEND:20261031T020000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-2-1793480400-1793487600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261031T210000Z
 DTEND:20261031T230000Z
 SUMMARY:[91.3 Ayclt FM] DJ CoyoteDave
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ CoyoteDave\nDJ/Host: DJ Coyote
- Dave\nListen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ a
- rtwork: https://radio.913aycltfm.com/api/station/1/streamer/5/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -113,24 +90,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793494800-1793498400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261101T010000Z
 DTEND:20261101T020000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-58-1793548800-1793556000@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261101T160000Z
 DTEND:20261101T180000Z
 SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ WolfDen\nDJ/Host: DJ WolfDen\n
- Listen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork
- : https://radio.913aycltfm.com/api/station/1/streamer/11/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -138,25 +110,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793584800-1793588400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261102T020000Z
 DTEND:20261102T030000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-48-1793628000-1793635200@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261102T140000Z
 DTEND:20261102T160000Z
 SUMMARY:[91.3 Ayclt FM] JB In The Morning
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: JB In The Morning \nDJ/Host: JB I
- n The Morning\nListen live: https://radio.913aycltfm.com/public/91.3_ayclt
- _fm\nDJ artwork: https://radio.913aycltfm.com/api/station/1/streamer/10/ar
- t
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -164,13 +130,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-58-1793635200-1793642400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261102T160000Z
 DTEND:20261102T180000Z
 SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ WolfDen\nDJ/Host: DJ WolfDen\n
- Listen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork
- : https://radio.913aycltfm.com/api/station/1/streamer/11/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -178,13 +141,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-104-1793644200-1793651400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261102T183000Z
 DTEND:20261102T203000Z
 SUMMARY:[91.3 Ayclt FM] The Milton Show
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: The Milton Show\nDJ/Host: The Mil
- ton Show\nListen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\n
- DJ artwork: https://radio.913aycltfm.com/api/station/1/streamer/21/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -192,25 +152,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793671200-1793674800@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261103T020000Z
 DTEND:20261103T030000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-55-1793710800-1793718000@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261103T130000Z
 DTEND:20261103T150000Z
 SUMMARY:[91.3 Ayclt FM] Best Of JB In the Morning (Tuesday Morning Edition)
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: Best Of JB In the Morning (Tuesda
- y Morning Edition)\nDJ/Host: JB In The Morning\nListen live: https://radio
- .913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: https://radio.913aycltfm
- .com/api/station/1/streamer/10/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -218,13 +172,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-62-1793718000-1793725200@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261103T150000Z
 DTEND:20261103T170000Z
 SUMMARY:[91.3 Ayclt FM] Rock Doc
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: Rock Doc\nDJ/Host: Rock Doc\nList
- en live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: ht
- tps://radio.913aycltfm.com/api/station/1/streamer/12/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -232,13 +183,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-97-1793750400-1793757600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261104T000000Z
 DTEND:20261104T020000Z
 SUMMARY:[91.3 Ayclt FM] DJ Robert
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ Robert\nDJ/Host: DJ Robert\nLi
- sten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: 
- https://radio.913aycltfm.com/api/station/1/streamer/19/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -246,25 +194,19 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793757600-1793761200@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261104T020000Z
 DTEND:20261104T030000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-48-1793800800-1793808000@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261104T140000Z
 DTEND:20261104T160000Z
 SUMMARY:[91.3 Ayclt FM] JB In The Morning
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: JB In The Morning \nDJ/Host: JB I
- n The Morning\nListen live: https://radio.913aycltfm.com/public/91.3_ayclt
- _fm\nDJ artwork: https://radio.913aycltfm.com/api/station/1/streamer/10/ar
- t
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -272,13 +214,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-65-1793815200-1793822400@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261104T180000Z
 DTEND:20261104T200000Z
 SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: DJ WolfDen\nDJ/Host: DJ WolfDen\n
- Listen live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork
- : https://radio.913aycltfm.com/api/station/1/streamer/11/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -286,26 +225,20 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-2-3-1793844000-1793847600@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261105T020000Z
 DTEND:20261105T030000Z
 SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts by Steve Habig
-DESCRIPTION:Station: 91.3 Ayclt FM HD2\nShow: Deep Cuts by Steve Habig\nLis
- ten live: https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-56-1793883600-1793890800@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261105T130000Z
 DTEND:20261105T150000Z
 SUMMARY:[91.3 Ayclt FM] Best Of JB In the Morning (Thursday Morning Edition
  )
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: Best Of JB In the Morning (Thursd
- ay Morning Edition)\nDJ/Host: JB In The Morning\nListen live: https://radi
- o.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: https://radio.913aycltf
- m.com/api/station/1/streamer/10/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
@@ -313,13 +246,10 @@ ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
 END:VEVENT
 BEGIN:VEVENT
 UID:ayclt-1-63-1793890800-1793905200@913aycltfm
-DTSTAMP:20261029T205635Z
+DTSTAMP:20261029T210307Z
 DTSTART:20261105T150000Z
 DTEND:20261105T190000Z
 SUMMARY:[91.3 Ayclt FM] Rock Doc
-DESCRIPTION:Station: 91.3 Ayclt FM\nShow: Rock Doc\nDJ/Host: Rock Doc\nList
- en live: https://radio.913aycltfm.com/public/91.3_ayclt_fm\nDJ artwork: ht
- tps://radio.913aycltfm.com/api/station/1/streamer/12/art
 URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
 ATTACH;FMTTYPE=image/jpeg:https://radio.913aycltfm.com/api/station/1/stream
