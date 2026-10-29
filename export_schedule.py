@@ -8,6 +8,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 AZURACAST_URL = "https://radio.913aycltfm.com"
+FALLBACK_COVER_URL = f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png"
 OUTPUT_FILE = "azuracast_schedule.ics"
 API_KEY = os.environ.get("AZURACAST_API_KEY", "")
 ALLOWED_SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3"]
@@ -287,10 +288,10 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
              f"SUMMARY:{summary}",
              f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}"]
-    # ATTACH is a standard iCalendar image attachment; many calendar apps show it
-    # as an event attachment even if they do not render DESCRIPTION image links.
-    if art_url:
-        lines.append(f"ATTACH;FMTTYPE=image/jpeg:{art_url}")
+    # The calendar consumer expects cover metadata in the requested +++ format.
+    # Keep matched DJ artwork; use the station album art only when no DJ art resolves.
+    cover_url = art_url or FALLBACK_COVER_URL
+    lines.extend(["+++", f'cover="{cover_url}"', "+++"])
     lines.append("END:VEVENT")
     return [fold_line(line) for line in lines]
 
