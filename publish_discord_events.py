@@ -153,7 +153,7 @@ def main():
                 skipped += 1
                 continue
             start, finish = event_times(event)
-            if not start or not finish or finish <= now or start >= end_window:
+            if not start or not finish or start < now or finish <= now or start >= end_window:
                 skipped += 1
                 continue
             title = str(event.get("name") or event.get("title") or event.get("playlist_name") or event.get("streamer_name") or "Scheduled Programming").strip()
