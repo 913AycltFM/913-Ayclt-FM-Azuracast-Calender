@@ -166,18 +166,59 @@ def first_value(*values):
             return value
     return ""
 
-def get_streamer_details(event):
-    """Read DJ/streamer details from the schedule record across AzuraCast API shapes."""
+def normalize_name(value):
+    value = str(value or "").casefold()
+    value = re.sub(r"\\b(dj|the|show|with)\\b", " ", value)
+    return re.sub(r"[^a-z0-9]+", "", value)
+
+def fetch_streamers(station_id, station_name):
+    """Fetch station DJ profiles so scheduled blocks can be linked to their artwork."""
+    url = f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id), safe='')}/streamers"
+    try:
+        data = get_json(url, f"streamer profiles for {station_name}")
+    except Exception as exc:
+        print(f"  WARNING: could not fetch streamer profiles: {exc}")
+        return []
+    if isinstance(data, dict):
+        for key in ("streamers", "data", "items", "results"):
+            if isinstance(data.get(key), list):
+                data = data[key]
+                break
+    if not isinstance(data, list):
+        print("  WARNING: streamer endpoint did not return a list.")
+        return []
+    profiles = [item for item in data if isinstance(item, dict) and first_value(item.get("id"))]
+    print(f"  Streamer profiles loaded: {len(profiles)}")
+    return profiles
+
+def get_streamer_details(event, profiles):
+    """Resolve the DJ from schedule metadata or the station's streamer profile list."""
     nested = event.get("streamer") if isinstance(event.get("streamer"), dict) else {}
     dj_name = first_value(
-        nested.get("name"), event.get("streamer_name"), event.get("dj_name"),
-        event.get("dj"), event.get("streamer") if not isinstance(event.get("streamer"), dict) else "",
+        nested.get("display_name"), nested.get("displayName"), nested.get("name"),
+        event.get("streamer_name"), event.get("dj_name"), event.get("dj"),
+        event.get("streamer") if not isinstance(event.get("streamer"), dict) else "",
         event.get("host_name")
     )
     streamer_id = first_value(
         nested.get("id"), event.get("streamer_id"), event.get("station_streamer_id"),
         event.get("dj_id"), event.get("host_id")
     )
+    event_name = first_value(event.get("name"), event.get("title"), event.get("playlist_name"), event.get("streamer_name"))
+    event_norm = normalize_name(event_name)
+    matched = None
+    for profile in profiles:
+        profile_name = first_value(profile.get("display_name"), profile.get("displayName"), profile.get("name"), profile.get("username"))
+        profile_norm = normalize_name(profile_name)
+        if streamer_id and str(profile.get("id")) == str(streamer_id):
+            matched = profile
+            break
+        if profile_norm and event_norm and (profile_norm == event_norm or profile_norm in event_norm or event_norm in profile_norm):
+            matched = profile
+            break
+    if matched:
+        streamer_id = first_value(streamer_id, matched.get("id"))
+        dj_name = first_value(dj_name, matched.get("display_name"), matched.get("displayName"), matched.get("name"), matched.get("username"))
     art_url = ""
     if streamer_id:
         art_url = f"{AZURACAST_URL}/api/station/{{station_id}}/streamer/{urllib.parse.quote(str(streamer_id), safe='')}/art"
@@ -185,9 +226,9 @@ def get_streamer_details(event):
         art_url = nested.get("art")
     return str(dj_name or "").strip(), art_url
 
-def make_event(station_id, station, event, start_dt, end_dt):
+def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     name = first_value(event.get("name"), event.get("title"), event.get("playlist_name"), event.get("streamer_name"), "Scheduled Programming")
-    dj_name, art_url_template = get_streamer_details(event)
+    dj_name, art_url_template = get_streamer_details(event, streamer_profiles)
     art_url = art_url_template.format(station_id=urllib.parse.quote(str(station_id), safe="")) if art_url_template else ""
     summary = clean_text(f"[{station['name']}] {name}")
     description_parts = [f"Station: {station['name']}", f"Show: {name}"]
@@ -201,7 +242,12 @@ def make_event(station_id, station, event, start_dt, end_dt):
              f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
              f"SUMMARY:{summary}", f"DESCRIPTION:{description}",
-             f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}", "END:VEVENT"]
+             f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}"]
+    # ATTACH is a standard iCalendar image attachment; many calendar apps show it
+    # as an event attachment even if they do not render DESCRIPTION image links.
+    if art_url:
+        lines.append(f"ATTACH;FMTTYPE=image/jpeg:{art_url}")
+    lines.append("END:VEVENT")
     return [fold_line(line) for line in lines]
 
 def main():
@@ -216,6 +262,7 @@ def main():
     for station_id, station in stations.items():
         print(f"\nStation: {station['name']} ({station['shortcode']})")
         schedule_data = fetch_schedule(station_id, now, window_end, station["name"])
+        streamer_profiles = fetch_streamers(station_id, station["name"])
         print(f"  Records returned: {len(schedule_data)}")
         counts = {"added": 0, "invalid": 0, "expired": 0, "out_of_window": 0, "duplicate": 0}
         for event in schedule_data:
@@ -253,7 +300,8 @@ def main():
     lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//91.3 Ayclt FM//AzuraCast Rolling Calendar//EN",
              "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:91.3 Ayclt FM"]
     for start_dt, end_dt, station_id, station, event in events:
-        lines.extend(make_event(station_id, station, event, start_dt, end_dt))
+        station_profiles = fetch_streamers(station_id, station["name"])
+        lines.extend(make_event(station_id, station, event, start_dt, end_dt, station_profiles))
     lines.append("END:VCALENDAR")
 
     with open(OUTPUT_FILE, "w", encoding="utf-8", newline="") as handle:
