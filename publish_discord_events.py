@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -68,9 +69,43 @@ def streamer_id(event):
     return None
 
 
-def artwork_data(station_id, event):
+def normalize_streamer_name(value):
+    value = str(value or "").lower().strip()
+    value = re.sub(r"^\\s*dj\\s+", "", value)
+    return re.sub(r"[^a-z0-9]", "", value)
+
+
+def get_streamer_profiles(station_id):
+    try:
+        data = azura_json(f"{AZURACAST_URL}/api/station/{station_id}/streamers")
+        if isinstance(data, dict):
+            for key in ("streamers", "data", "items", "results"):
+                if isinstance(data.get(key), list):
+                    data = data[key]
+                    break
+        profiles = {}
+        if isinstance(data, list):
+            for profile in data:
+                if not isinstance(profile, dict) or not profile.get("id"):
+                    continue
+                name = profile.get("name") or profile.get("display_name") or profile.get("streamer_name")
+                normalized = normalize_streamer_name(name)
+                if normalized:
+                    profiles[normalized] = str(profile["id"])
+        print(f"  Loaded {len(profiles)} DJ artwork profile(s) for station {station_id}")
+        return profiles
+    except Exception as exc:
+        print(f"  Could not load DJ profiles for station {station_id}: {exc}")
+        return {}
+
+
+def artwork_data(station_id, event, profiles):
     sid = streamer_id(event)
     if not sid:
+        dj_name = event.get("streamer_name") or event.get("dj_name")
+        sid = profiles.get(normalize_streamer_name(dj_name))
+    if not sid:
+        print(f"  No matching DJ artwork profile for {event.get('streamer_name') or event.get('dj_name') or 'this event'}.")
         return None
     url = f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id))}/streamer/{urllib.parse.quote(sid)}/art"
     headers = {"User-Agent": "913AycltFM-AzuraCast-Discord-Events/1.0"}
@@ -154,6 +189,7 @@ def main():
         station_name = str(station.get("name") or station["shortcode"])
         listen_url = f"{AZURACAST_URL}/public/{station['shortcode']}"
         schedule = get_schedule(station_id, station_name, now, end_window)
+        streamer_profiles = get_streamer_profiles(station_id)
         print(f"{station_name}: received {len(schedule)} schedule item(s)")
         for event in schedule:
             if not isinstance(event, dict):
@@ -174,7 +210,7 @@ def main():
                 "scheduled_end_time": finish.isoformat().replace("+00:00", "Z"),
                 "entity_metadata": {"location": listen_url[:100]},
             }
-            art = artwork_data(station_id, event)
+            art = artwork_data(station_id, event, streamer_profiles)
             if art:
                 payload["image"] = art
             old = by_key.get(key) or by_identity.get((
