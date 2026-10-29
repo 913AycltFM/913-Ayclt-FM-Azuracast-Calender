@@ -155,13 +155,54 @@ def stable_uid(station_id, event, start_dt, end_dt):
     event_id = str(event.get("id") or event.get("schedule_id") or event.get("station_schedule_id") or "event")
     return f"ayclt-{station_id}-{event_id}-{int(start_dt.timestamp())}-{int(end_dt.timestamp())}@913aycltfm"
 
+def ical_text(value, fallback=""):
+    """Escape user/API text for an iCalendar TEXT property."""
+    text = str(value or fallback).strip()
+    text = re.sub(r"[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]", "", text)
+    return text.replace("\\\\", "\\\\\\\\").replace("\\r\\n", "\\n").replace("\\r", "\\n").replace("\\n", "\\\\n").replace(";", "\\\\;").replace(",", "\\\\,")
+
+def first_value(*values):
+    for value in values:
+        if value is not None and str(value).strip():
+            return value
+    return ""
+
+def get_streamer_details(event):
+    """Read DJ/streamer details from the schedule record across AzuraCast API shapes."""
+    nested = event.get("streamer") if isinstance(event.get("streamer"), dict) else {}
+    dj_name = first_value(
+        nested.get("name"), event.get("streamer_name"), event.get("dj_name"),
+        event.get("dj"), event.get("streamer") if not isinstance(event.get("streamer"), dict) else "",
+        event.get("host_name")
+    )
+    streamer_id = first_value(
+        nested.get("id"), event.get("streamer_id"), event.get("station_streamer_id"),
+        event.get("dj_id"), event.get("host_id")
+    )
+    art_url = ""
+    if streamer_id:
+        art_url = f"{AZURACAST_URL}/api/station/{{station_id}}/streamer/{urllib.parse.quote(str(streamer_id), safe='')}/art"
+    elif isinstance(nested.get("art"), str) and nested.get("art").startswith("http"):
+        art_url = nested.get("art")
+    return str(dj_name or "").strip(), art_url
+
 def make_event(station_id, station, event, start_dt, end_dt):
-    name = event.get("name") or event.get("title") or event.get("playlist_name") or event.get("streamer_name") or "Scheduled Programming"
+    name = first_value(event.get("name"), event.get("title"), event.get("playlist_name"), event.get("streamer_name"), "Scheduled Programming")
+    dj_name, art_url_template = get_streamer_details(event)
+    art_url = art_url_template.format(station_id=urllib.parse.quote(str(station_id), safe="")) if art_url_template else ""
     summary = clean_text(f"[{station['name']}] {name}")
+    description_parts = [f"Station: {station['name']}", f"Show: {name}"]
+    if dj_name:
+        description_parts.append(f"DJ/Host: {dj_name}")
+    description_parts.append(f"Listen live: {station['public_url']}")
+    if art_url:
+        description_parts.append(f"DJ artwork: {art_url}")
+    description = ical_text("\\n".join(description_parts))
     lines = ["BEGIN:VEVENT", f"UID:{stable_uid(station_id, event, start_dt, end_dt)}",
-             f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT000000Z')}",
+             f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
-             f"SUMMARY:{summary}", f"LOCATION:{station['public_url']}", "END:VEVENT"]
+             f"SUMMARY:{summary}", f"DESCRIPTION:{description}",
+             f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}", "END:VEVENT"]
     return [fold_line(line) for line in lines]
 
 def main():
