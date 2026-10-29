@@ -60,12 +60,17 @@ def event_times(event):
 
 
 def streamer_id(event):
-    for key in ("streamer_id", "dj_id", "streamer"):
-        value = event.get(key)
-        if isinstance(value, dict):
-            value = value.get("id")
-        if value is not None and str(value).isdigit():
-            return str(value)
+    nested = event.get("streamer") if isinstance(event.get("streamer"), dict) else {}
+    for value in (
+        event.get("streamer_id"),
+        event.get("station_streamer_id"),
+        event.get("dj_id"),
+        event.get("host_id"),
+        nested.get("id"),
+        event.get("streamer") if not isinstance(event.get("streamer"), dict) else None,
+    ):
+        if value is not None and str(value).strip().isdigit():
+            return str(value).strip()
     return None
 
 
@@ -73,6 +78,17 @@ def normalize_streamer_name(value):
     value = str(value or "").lower().strip()
     value = re.sub(r"^\s*dj\s+", "", value)
     return re.sub(r"[^a-z0-9]", "", value)
+
+
+def profile_name(profile):
+    return (
+        profile.get("display_name")
+        or profile.get("displayName")
+        or profile.get("name")
+        or profile.get("username")
+        or profile.get("streamer_name")
+        or ""
+    )
 
 
 def get_streamer_profiles(station_id):
@@ -83,31 +99,89 @@ def get_streamer_profiles(station_id):
                 if isinstance(data.get(key), list):
                     data = data[key]
                     break
-        profiles = {}
-        if isinstance(data, list):
-            for profile in data:
-                if not isinstance(profile, dict) or not profile.get("id"):
-                    continue
-                name = profile.get("name") or profile.get("display_name") or profile.get("streamer_name")
-                normalized = normalize_streamer_name(name)
-                if normalized:
-                    profiles[normalized] = str(profile["id"])
+        profiles = [
+            profile for profile in data
+            if isinstance(profile, dict) and profile.get("id") is not None
+        ] if isinstance(data, list) else []
         print(f"  Loaded {len(profiles)} DJ artwork profile(s) for station {station_id}")
+        for profile in profiles:
+            print(f"    DJ profile: {profile_name(profile) or 'Unnamed'} (ID {profile['id']})")
         return profiles
     except Exception as exc:
         print(f"  Could not load DJ profiles for station {station_id}: {exc}")
-        return {}
+        return []
 
 
 def artwork_data(station_id, event, profiles):
     sid = streamer_id(event)
-    if not sid:
-        dj_name = event.get("streamer_name") or event.get("dj_name")
-        sid = profiles.get(normalize_streamer_name(dj_name))
-    if not sid:
-        print(f"  No matching DJ artwork profile for {event.get('streamer_name') or event.get('dj_name') or 'this event'}.")
+    nested = event.get("streamer") if isinstance(event.get("streamer"), dict) else {}
+
+    # Try explicit DJ/streamer metadata first, then the scheduled event title.
+    candidates = [
+        nested.get("display_name"),
+        nested.get("displayName"),
+        nested.get("name"),
+        event.get("streamer_name"),
+        event.get("dj_name"),
+        event.get("host_name"),
+        event.get("dj"),
+        event.get("streamer") if not isinstance(event.get("streamer"), dict) else None,
+        event.get("name"),
+        event.get("title"),
+        event.get("playlist_name"),
+    ]
+    candidate_names = [
+        normalize_streamer_name(value)
+        for value in candidates
+        if value is not None and str(value).strip()
+    ]
+
+    matched = None
+    if sid:
+        matched = next(
+            (profile for profile in profiles if str(profile.get("id")) == sid),
+            None,
+        )
+    if not matched:
+        # Prefer exact matches; then allow a DJ name to appear in a show title
+        # (for example, "JB" in "JB In The Morning").
+        for candidate in candidate_names:
+            matched = next(
+                (
+                    profile for profile in profiles
+                    if normalize_streamer_name(profile_name(profile)) == candidate
+                ),
+                None,
+            )
+            if matched:
+                break
+        if not matched:
+            for candidate in candidate_names:
+                matched = next(
+                    (
+                        profile for profile in profiles
+                        if len(normalize_streamer_name(profile_name(profile))) >= 2
+                        and normalize_streamer_name(profile_name(profile)) in candidate
+                    ),
+                    None,
+                )
+                if matched:
+                    break
+
+    if matched:
+        sid = str(matched["id"])
+        print(f"  Matched DJ artwork: {profile_name(matched) or 'Unnamed'} (streamer {sid})")
+    elif sid:
+        print(f"  Using streamer ID {sid} from schedule metadata.")
+    else:
+        label = next((str(value).strip() for value in candidates if value), "this event")
+        print(f"  No matching DJ artwork profile for '{label}'.")
         return None
-    url = f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id))}/streamer/{urllib.parse.quote(sid)}/art"
+
+    url = (
+        f"{AZURACAST_URL}/api/station/{urllib.parse.quote(str(station_id))}"
+        f"/streamer/{urllib.parse.quote(sid)}/art"
+    )
     headers = {"User-Agent": "913AycltFM-AzuraCast-Discord-Events/1.0"}
     if API_KEY:
         headers["Authorization"] = f"Bearer {API_KEY}"
@@ -115,10 +189,16 @@ def artwork_data(station_id, event, profiles):
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=TIMEOUT) as response:
             image_bytes = response.read()
-            mime = response.headers.get_content_type()
-        if not image_bytes or not mime.startswith("image/"):
-            print(f"  Artwork unavailable for streamer {sid}; event will use no cover image.")
+            mime = response.headers.get_content_type().lower()
+        if not image_bytes or mime not in ("image/jpeg", "image/png", "image/gif"):
+            print(
+                f"  Unsupported or empty artwork for streamer {sid} "
+                f"(content type: {mime or 'unknown'})."
+            )
             return None
+        print(f"  Downloaded DJ cover image: {len(image_bytes)} bytes ({mime}).")
+        # Discord's scheduled-event image field requires a base64 data URI,
+        # not a plain URL. Keep the returned MIME type in the data URI.
         return f"data:{mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"
     except Exception as exc:
         print(f"  Artwork fetch failed for streamer {sid}: {exc}")
