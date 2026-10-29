@@ -257,12 +257,14 @@ def main():
     print(f"Calendar window: {format_ical_date(now)} through {format_ical_date(window_end)}")
     stations = get_filtered_stations()
     events, seen = [], set()
+    streamers_by_station = {}
     totals = {"invalid": 0, "expired": 0, "out_of_window": 0, "duplicate": 0}
 
     for station_id, station in stations.items():
         print(f"\nStation: {station['name']} ({station['shortcode']})")
         schedule_data = fetch_schedule(station_id, now, window_end, station["name"])
         streamer_profiles = fetch_streamers(station_id, station["name"])
+        streamers_by_station[station_id] = streamer_profiles
         print(f"  Records returned: {len(schedule_data)}")
         counts = {"added": 0, "invalid": 0, "expired": 0, "out_of_window": 0, "duplicate": 0}
         for event in schedule_data:
@@ -300,8 +302,7 @@ def main():
     lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//91.3 Ayclt FM//AzuraCast Rolling Calendar//EN",
              "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:91.3 Ayclt FM"]
     for start_dt, end_dt, station_id, station, event in events:
-        station_profiles = fetch_streamers(station_id, station["name"])
-        lines.extend(make_event(station_id, station, event, start_dt, end_dt, station_profiles))
+        lines.extend(make_event(station_id, station, event, start_dt, end_dt, streamers_by_station.get(station_id, [])))
     lines.append("END:VCALENDAR")
 
     with open(OUTPUT_FILE, "w", encoding="utf-8", newline="") as handle:
