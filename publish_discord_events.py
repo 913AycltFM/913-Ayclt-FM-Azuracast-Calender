@@ -71,7 +71,7 @@ def streamer_id(event):
 
 def normalize_streamer_name(value):
     value = str(value or "").lower().strip()
-    value = re.sub(r"^\\s*dj\\s+", "", value)
+    value = re.sub(r"^\s*dj\s+", "", value)
     return re.sub(r"[^a-z0-9]", "", value)
 
 
