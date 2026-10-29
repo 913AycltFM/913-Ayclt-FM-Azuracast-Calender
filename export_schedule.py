@@ -192,8 +192,11 @@ def fetch_streamers(station_id, station_name):
     return profiles
 
 def get_streamer_details(event, profiles):
-    """Resolve the DJ from schedule metadata or the station's streamer profile list."""
+    """Resolve the scheduled DJ before falling back to matching the show title."""
     nested = event.get("streamer") if isinstance(event.get("streamer"), dict) else {}
+
+    # Prefer explicit DJ/streamer metadata. Schedule event titles often name the
+    # show, not the person hosting it, so title matching must be the last resort.
     dj_name = first_value(
         nested.get("display_name"), nested.get("displayName"), nested.get("name"),
         event.get("streamer_name"), event.get("dj_name"), event.get("dj"),
@@ -204,26 +207,74 @@ def get_streamer_details(event, profiles):
         nested.get("id"), event.get("streamer_id"), event.get("station_streamer_id"),
         event.get("dj_id"), event.get("host_id")
     )
-    event_name = first_value(event.get("name"), event.get("title"), event.get("playlist_name"), event.get("streamer_name"))
-    event_norm = normalize_name(event_name)
+    event_name = first_value(
+        event.get("name"), event.get("title"), event.get("playlist_name")
+    )
+
+    def profile_names(profile):
+        values = (
+            profile.get("display_name"), profile.get("displayName"),
+            profile.get("name"), profile.get("username")
+        )
+        return [str(value).strip() for value in values if value is not None and str(value).strip()]
+
     matched = None
-    for profile in profiles:
-        profile_name = first_value(profile.get("display_name"), profile.get("displayName"), profile.get("name"), profile.get("username"))
-        profile_norm = normalize_name(profile_name)
-        if streamer_id and str(profile.get("id")) == str(streamer_id):
-            matched = profile
-            break
-        if profile_norm and event_norm and (profile_norm == event_norm or profile_norm in event_norm or event_norm in profile_norm):
-            matched = profile
-            break
+
+    # A real streamer ID is the most reliable identifier.
+    if streamer_id:
+        matched = next(
+            (profile for profile in profiles
+             if str(profile.get("id", "")) == str(streamer_id)),
+            None
+        )
+
+    # Next match the DJ name supplied by the schedule against all profile names.
+    if matched is None and dj_name:
+        dj_norm = normalize_name(dj_name)
+        if dj_norm:
+            for profile in profiles:
+                if any(normalize_name(name) == dj_norm for name in profile_names(profile)):
+                    matched = profile
+                    break
+
+    # Only use the event/show title if the schedule did not identify a DJ.
+    if matched is None and not dj_name and event_name:
+        event_norm = normalize_name(event_name)
+        if event_norm:
+            exact_matches = [
+                profile for profile in profiles
+                if any(normalize_name(name) == event_norm for name in profile_names(profile))
+            ]
+            if len(exact_matches) == 1:
+                matched = exact_matches[0]
+            else:
+                partial_matches = [
+                    profile for profile in profiles
+                    if any(
+                        len(normalize_name(name)) >= 4 and
+                        (normalize_name(name) in event_norm or event_norm in normalize_name(name))
+                        for name in profile_names(profile)
+                    )
+                ]
+                if len(partial_matches) == 1:
+                    matched = partial_matches[0]
+
     if matched:
         streamer_id = first_value(streamer_id, matched.get("id"))
-        dj_name = first_value(dj_name, matched.get("display_name"), matched.get("displayName"), matched.get("name"), matched.get("username"))
+        dj_name = first_value(
+            dj_name, matched.get("display_name"), matched.get("displayName"),
+            matched.get("name"), matched.get("username")
+        )
+
     art_url = ""
     if streamer_id:
-        art_url = f"{AZURACAST_URL}/api/station/{{station_id}}/streamer/{urllib.parse.quote(str(streamer_id), safe='')}/art"
+        art_url = (
+            f"{AZURACAST_URL}/api/station/{{station_id}}/streamer/"
+            f"{urllib.parse.quote(str(streamer_id), safe='')}/art"
+        )
     elif isinstance(nested.get("art"), str) and nested.get("art").startswith("http"):
         art_url = nested.get("art")
+
     return str(dj_name or "").strip(), art_url
 
 def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
