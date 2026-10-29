@@ -231,17 +231,10 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     dj_name, art_url_template = get_streamer_details(event, streamer_profiles)
     art_url = art_url_template.format(station_id=urllib.parse.quote(str(station_id), safe="")) if art_url_template else ""
     summary = clean_text(f"[{station['name']}] {name}")
-    description_parts = [f"Station: {station['name']}", f"Show: {name}"]
-    if dj_name:
-        description_parts.append(f"DJ/Host: {dj_name}")
-    description_parts.append(f"Listen live: {station['public_url']}")
-    if art_url:
-        description_parts.append(f"DJ artwork: {art_url}")
-    description = ical_text("\n".join(description_parts))
     lines = ["BEGIN:VEVENT", f"UID:{stable_uid(station_id, event, start_dt, end_dt)}",
              f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
-             f"SUMMARY:{summary}", f"DESCRIPTION:{description}",
+             f"SUMMARY:{summary}",
              f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}"]
     # ATTACH is a standard iCalendar image attachment; many calendar apps show it
     # as an event attachment even if they do not render DESCRIPTION image links.
