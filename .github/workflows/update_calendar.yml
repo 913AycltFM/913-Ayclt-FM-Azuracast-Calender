@@ -78,18 +78,6 @@ jobs:
           print("===== CALENDAR VALIDATION PASSED =====")
           PY
 
-      - name: Publish or update Discord scheduled events
-        env:
-          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
-        run: |
-          if [ -z "$DISCORD_BOT_TOKEN" ] || [ -z "$DISCORD_GUILD_ID" ]; then
-            echo "Discord publishing skipped: add DISCORD_BOT_TOKEN and DISCORD_GUILD_ID repository secrets to enable it."
-          else
-            python publish_discord_events.py
-          fi
-
       - name: Commit calendar to main
         run: |
           git config user.name "github-actions[bot]"
