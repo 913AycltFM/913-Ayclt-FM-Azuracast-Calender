@@ -288,10 +288,12 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
              f"SUMMARY:{summary}",
              f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}"]
-    # Keep matched DJ artwork; use station album art only when no DJ art resolves.
-    # IMAGE is a valid iCalendar property (RFC 7986); raw +++ cover blocks are
-    # not valid iCalendar content and cause strict calendar notifiers to reject the feed.
+    # ChronicleBot reads cover metadata from the event DESCRIPTION front matter.
+    # The DESCRIPTION contains only metadata; ChronicleBot strips it from the visible event.
+    # Keep the RFC 7986 IMAGE property as a standards-based hint for other calendar clients.
     cover_url = art_url or FALLBACK_COVER_URL
+    cover_front_matter = f'+++\\ncover="{cover_url}"\\n+++'
+    lines.append(f"DESCRIPTION:{ical_text(cover_front_matter)}")
     lines.append(f"IMAGE;VALUE=URI;DISPLAY=BADGE:{cover_url}")
     lines.append("END:VEVENT")
     return [fold_line(line) for line in lines]
