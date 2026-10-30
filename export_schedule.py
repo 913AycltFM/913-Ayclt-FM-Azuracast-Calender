@@ -292,7 +292,7 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     # The DESCRIPTION contains only metadata; ChronicleBot strips it from the visible event.
     # Keep the RFC 7986 IMAGE property as a standards-based hint for other calendar clients.
     cover_url = art_url or FALLBACK_COVER_URL
-    cover_front_matter = f'+++\\ncover="{cover_url}"\\n+++'
+    cover_front_matter = f'+++\ncover="{cover_url}"\n+++'
     lines.append(f"DESCRIPTION:{ical_text(cover_front_matter)}")
     lines.append(f"IMAGE;VALUE=URI;DISPLAY=BADGE:{cover_url}")
     lines.append("END:VEVENT")
