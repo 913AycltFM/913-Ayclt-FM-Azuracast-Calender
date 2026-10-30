@@ -10,7 +10,6 @@ Only these three AzuraCast stations are included:
 - 91.3 Ayclt FM HD2
 - 91.3 Ayclt FM HD3
 
-Gaming Central Radio and other stations are not included.
 
 ## Automatic updates
 
