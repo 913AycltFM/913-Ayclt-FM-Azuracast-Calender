@@ -2,8 +2,8 @@ name: Update AzuraCast Calendar
 
 on:
   schedule:
-    # Every 5 minutes.
-    - cron: "*/5 * * * *"
+    # Every 5 minutes, offset from the hour to reduce scheduling contention.
+    - cron: "1-59/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -67,7 +67,7 @@ jobs:
           for line in lines:
               if line.startswith(("DTSTART:", "DTEND:", "DTSTAMP:")):
                   value = line.split(":", 1)[1]
-                  if not re.fullmatch(r"\d{8}T\d{6}Z", value):
+                  if not re.fullmatch(r"\\d{8}T\\d{6}Z", value):
                       raise SystemExit(f"Invalid UTC timestamp: {line}")
                   timestamp_fields += 1
 
