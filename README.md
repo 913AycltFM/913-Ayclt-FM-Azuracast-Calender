@@ -1,6 +1,6 @@
 # 91.3 Ayclt FM — AzuraCast Calendar
 
-Automated rolling 7-day programming calendar for 91.3 Ayclt FM, HD2, and HD3. The calendar is generated from the AzuraCast API and can be subscribed to by calendar applications and ChronicleBot.
+Automated rolling 7-day programming calendar for 91.3 Ayclt FM, HD2, and HD3. The calendar is generated from the AzuraCast API and can be subscribed to by calendar applications.
 
 ## Included stations
 
@@ -36,19 +36,14 @@ The workflow generates:
 
 [Subscribe to the 91.3 Ayclt FM calendar](https://raw.githubusercontent.com/913AycltFM/913-Ayclt-FM-Azuracast-Calender/refs/heads/main/azuracast_schedule.ics)
 
-Use the raw feed URL when adding the calendar to a calendar app or configuring ChronicleBot to read the calendar.
+Use the raw feed URL when adding the calendar to a calendar application.
 
 ## DJ and station artwork
 
 For each event, the exporter tries to match the scheduled DJ to that station's AzuraCast streamer profile and uses the streamer's artwork URL. If no DJ artwork can be matched, it uses that station's configured fallback cover art.
 
-The ICS event includes ChronicleBot cover metadata in the DESCRIPTION front matter and an iCalendar `IMAGE` property for compatible calendar clients. Some calendar applications do not display remote event images.
+The ICS event includes cover metadata in the DESCRIPTION front matter and an iCalendar `IMAGE` property for compatible calendar clients. Some calendar applications do not display remote event images.
 
-## ChronicleBot
-
-ChronicleBot is the calendar integration used to create Discord scheduled events from this iCalendar feed. Configure ChronicleBot to subscribe to the raw calendar URL above. When the calendar updates, ChronicleBot can read the updated schedule and event cover metadata.
-
-If artwork changes for an event that ChronicleBot has already imported, it may be necessary to remove the old Discord event and let ChronicleBot recreate it so the new cover is applied.
 
 ## API security
 
