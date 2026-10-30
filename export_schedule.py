@@ -8,7 +8,11 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 AZURACAST_URL = "https://radio.913aycltfm.com"
-FALLBACK_COVER_URL = f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png"
+FALLBACK_COVER_URLS = {
+    "91.3_ayclt_fm": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png",
+    "91.3_ayclt_fm_hd2": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd2/background.1779890739.png",
+    "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png",
+}
 OUTPUT_FILE = "azuracast_schedule.ics"
 API_KEY = os.environ.get("AZURACAST_API_KEY", "")
 ALLOWED_SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3"]
@@ -291,7 +295,10 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     # ChronicleBot reads cover metadata from the event DESCRIPTION front matter.
     # The DESCRIPTION contains only metadata; ChronicleBot strips it from the visible event.
     # Keep the RFC 7986 IMAGE property as a standards-based hint for other calendar clients.
-    cover_url = art_url or FALLBACK_COVER_URL
+    station_fallback = FALLBACK_COVER_URLS.get(
+        station["shortcode"], FALLBACK_COVER_URLS["91.3_ayclt_fm"]
+    )
+    cover_url = art_url or station_fallback
     cover_front_matter = f'+++\ncover="{cover_url}"\n+++'
     lines.append(f"DESCRIPTION:{ical_text(cover_front_matter)}")
     lines.append(f"IMAGE;VALUE=URI;DISPLAY=BADGE:{cover_url}")
