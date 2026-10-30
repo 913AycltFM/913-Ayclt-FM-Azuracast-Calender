@@ -11,7 +11,7 @@ AZURACAST_URL = "https://radio.913aycltfm.com"
 FALLBACK_COVER_URLS = {
     "91.3_ayclt_fm": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png",
     "91.3_ayclt_fm_hd2": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd2/background.1779890739.png",
-    "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/album_art.1778824541.png",
+    "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd3/background.1779890763.png",
 }
 OUTPUT_FILE = "azuracast_schedule.ics"
 API_KEY = os.environ.get("AZURACAST_API_KEY", "")
