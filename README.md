@@ -44,20 +44,11 @@ For each event, the exporter tries to match the scheduled DJ to that station's A
 
 The ICS event includes ChronicleBot cover metadata in the DESCRIPTION front matter and an iCalendar `IMAGE` property for compatible calendar clients. Some calendar applications do not display remote event images.
 
-## Optional Discord Scheduled Events publisher
+## ChronicleBot
 
-The repository also contains an optional Discord event publisher. To enable it, add these repository secrets under **Settings → Secrets and variables → Actions**:
+ChronicleBot is the calendar integration used to create Discord scheduled events from this iCalendar feed. Configure ChronicleBot to subscribe to the raw calendar URL above. When the calendar updates, ChronicleBot can read the updated schedule and event cover metadata.
 
-- `DISCORD_BOT_TOKEN` — the bot token from the Discord Developer Portal. Never put it in source code or chat.
-- `DISCORD_GUILD_ID` — the ID of the Discord server where events should be published.
-
-Keep the existing `AZURACAST_API_KEY` secret if your AzuraCast API requires it.
-
-Invite the bot to the server and grant it the **Create Events** permission. After adding the secrets, run **Actions → Update AzuraCast Calendar → Run workflow** and check the logs.
-
-The optional publisher creates or updates matching upcoming events. Existing Discord events are not automatically deleted when a schedule item disappears, and events whose start time has passed are skipped. This optional publisher is separate from subscribing ChronicleBot to the ICS feed.
-
-See the [official Discord Scheduled Events documentation](https://discord.com/developers/docs/resources/guild-scheduled-event).
+If artwork changes for an event that ChronicleBot has already imported, it may be necessary to remove the old Discord event and let ChronicleBot recreate it so the new cover is applied.
 
 ## API security
 
