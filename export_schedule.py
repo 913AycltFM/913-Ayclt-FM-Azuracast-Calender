@@ -288,10 +288,11 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
              f"DTSTART:{format_ical_date(start_dt)}", f"DTEND:{format_ical_date(end_dt)}",
              f"SUMMARY:{summary}",
              f"URL:{station['public_url']}", f"LOCATION:{station['public_url']}"]
-    # The calendar consumer expects cover metadata in the requested +++ format.
-    # Keep matched DJ artwork; use the station album art only when no DJ art resolves.
+    # Keep matched DJ artwork; use station album art only when no DJ art resolves.
+    # IMAGE is a valid iCalendar property (RFC 7986); raw +++ cover blocks are
+    # not valid iCalendar content and cause strict calendar notifiers to reject the feed.
     cover_url = art_url or FALLBACK_COVER_URL
-    lines.extend(["+++", f'cover="{cover_url}"', "+++"])
+    lines.append(f"IMAGE;VALUE=URI;DISPLAY=BADGE:{cover_url}")
     lines.append("END:VEVENT")
     return [fold_line(line) for line in lines]
 
