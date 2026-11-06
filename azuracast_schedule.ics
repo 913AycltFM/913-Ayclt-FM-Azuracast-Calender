@@ -5,32 +5,6 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:91.3 Ayclt FM
 BEGIN:VEVENT
-UID:ayclt-1-8-1793973600-1793980800@913aycltfm
-DTSTAMP:20261106T125203Z
-DTSTART:20261106T140000Z
-DTEND:20261106T160000Z
-SUMMARY:[91.3 Ayclt FM] JB In The Morning
-URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
- /4/art"\n+++
-IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
- reamer/4/art
-END:VEVENT
-BEGIN:VEVENT
-UID:ayclt-1-9-1793980800-1793988000@913aycltfm
-DTSTAMP:20261106T125203Z
-DTSTART:20261106T160000Z
-DTEND:20261106T180000Z
-SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
- /6/art"\n+++
-IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
- reamer/6/art
-END:VEVENT
-BEGIN:VEVENT
 UID:ayclt-1-6-1793991600-1793998800@913aycltfm
 DTSTAMP:20261106T125203Z
 DTSTART:20261106T190000Z
@@ -315,5 +289,44 @@ DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/static/uploads/91.3_ay
  clt_fm_hd2/background.1779890739.png"\n+++
 IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/static/uploads/9
  1.3_ayclt_fm_hd2/background.1779890739.png
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-8-1794578400-1794585600@913aycltfm
+DTSTAMP:20261106T191839Z
+DTSTART:20261113T140000Z
+DTEND:20261113T160000Z
+SUMMARY:[91.3 Ayclt FM] JB In The Morning
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /4/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/4/art
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-9-1794585600-1794592800@913aycltfm
+DTSTAMP:20261106T191839Z
+DTSTART:20261113T160000Z
+DTEND:20261113T180000Z
+SUMMARY:[91.3 Ayclt FM] DJ WolfDen
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /6/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/6/art
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-6-1794596400-1794603600@913aycltfm
+DTSTAMP:20261106T191839Z
+DTSTART:20261113T190000Z
+DTEND:20261113T210000Z
+SUMMARY:[91.3 Ayclt FM] Rock Doc
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /3/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/3/art
 END:VEVENT
 END:VCALENDAR
