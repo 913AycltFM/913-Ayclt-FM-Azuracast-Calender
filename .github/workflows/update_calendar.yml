@@ -35,6 +35,7 @@ jobs:
         run: |
           echo "===== CALENDAR UPDATE START ====="
           echo "UTC time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          python -m py_compile export_schedule.py
           python export_schedule.py
 
           python - <<'PY'
