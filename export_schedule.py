@@ -282,6 +282,68 @@ def get_streamer_details(event, profiles):
 
     return str(dj_name or "").strip(), art_url
 
+def unfold_ical_lines(raw_lines):
+    unfolded = []
+    for line in raw_lines:
+        if line.startswith((" ", "\\t")) and unfolded:
+            unfolded[-1] += line[1:]
+        else:
+            unfolded.append(line)
+    return unfolded
+
+
+def read_existing_events(path=OUTPUT_FILE):
+    """Read existing VEVENT properties so unchanged events keep their DTSTAMP."""
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            raw_lines = handle.read().splitlines()
+    except FileNotFoundError:
+        return {}
+
+    events, current = {}, None
+    for line in unfold_ical_lines(raw_lines):
+        if line == "BEGIN:VEVENT":
+            current = {}
+        elif line == "END:VEVENT" and current is not None:
+            uid = current.get("UID")
+            if uid:
+                events[uid] = current
+            current = None
+        elif current is not None and ":" in line:
+            name, value = line.split(":", 1)
+            current[name.split(";", 1)[0]] = value
+    return events
+
+
+def preserve_unchanged_dtstamps(calendar_lines, previous_events):
+    """Keep event modification timestamps stable unless event content changed."""
+    current, in_event = [], False
+    for index, line in enumerate(calendar_lines):
+        if line == "BEGIN:VEVENT":
+            current, in_event = [], True
+        if in_event:
+            current.append((index, line))
+        if line == "END:VEVENT" and in_event:
+            unfolded = unfold_ical_lines([item[1] for item in current])
+            properties = {}
+            for item in unfolded:
+                if ":" in item and item not in ("BEGIN:VEVENT", "END:VEVENT"):
+                    name, value = item.split(":", 1)
+                    properties[name.split(";", 1)[0]] = value
+            uid = properties.get("UID")
+            previous = previous_events.get(uid) if uid else None
+            if previous:
+                new_content = {k: v for k, v in properties.items() if k != "DTSTAMP"}
+                old_content = {k: v for k, v in previous.items() if k != "DTSTAMP"}
+                if new_content == old_content and previous.get("DTSTAMP"):
+                    for item_index, item_line in current:
+                        if item_line.startswith("DTSTAMP:"):
+                            calendar_lines[item_index] = "DTSTAMP:" + previous["DTSTAMP"]
+                            break
+            in_event = False
+    return calendar_lines
+
+
 def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     name = first_value(event.get("name"), event.get("title"), event.get("playlist_name"), event.get("streamer_name"), "Scheduled Programming")
     dj_name, art_url_template = get_streamer_details(event, streamer_profiles)
@@ -306,6 +368,7 @@ def make_event(station_id, station, event, start_dt, end_dt, streamer_profiles):
     return [fold_line(line) for line in lines]
 
 def main():
+    previous_events = read_existing_events()
     now = datetime.now(timezone.utc)
     window_end = now + timedelta(hours=WINDOW_HOURS)
     print(f"Update started: {now.strftime('%Y-%m-%d %H:%M:%S UTC')}")
@@ -359,6 +422,7 @@ def main():
     for start_dt, end_dt, station_id, station, event in events:
         lines.extend(make_event(station_id, station, event, start_dt, end_dt, streamers_by_station.get(station_id, [])))
     lines.append("END:VCALENDAR")
+    lines = preserve_unchanged_dtstamps(lines, previous_events)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8", newline="") as handle:
         handle.write("\r\n".join(lines) + "\r\n")
