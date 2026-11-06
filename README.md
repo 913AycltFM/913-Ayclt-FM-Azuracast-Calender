@@ -21,7 +21,7 @@ GitHub Actions runs the **Update AzuraCast Calendar** workflow every five minute
 
 The workflow can also be started manually from **Actions → Update AzuraCast Calendar → Run workflow**.
 
-Each run fetches the upcoming seven days of schedules for all three stations, rebuilds the iCalendar file, validates it, and commits the updated file when its contents change. GitHub may delay scheduled workflows during busy periods, so five minutes is the configured interval, not a guaranteed exact execution time.
+Each run fetches the upcoming seven days of schedules for all three stations, rebuilds the iCalendar file, validates it, and commits the updated file only when event data changes. Unchanged events retain their original `DTSTAMP`, preventing needless commits every five minutes. The workflow does not publish an empty calendar if the schedule API unexpectedly returns no events. GitHub may delay scheduled workflows during busy periods, so five minutes is the configured interval, not a guaranteed exact execution time.
 
 ## Generated calendar
 
@@ -50,6 +50,6 @@ Store the AzuraCast API key and Discord bot token in GitHub Actions secrets only
 
 ## Validation
 
-Before publishing, the workflow validates the generated calendar structure, event pairs, unique UIDs, and UTC timestamp fields.
+Before publishing, the workflow validates the generated calendar structure, non-empty event set, required event fields, event pairs, unique UIDs, positive event durations, and UTC timestamp fields. Concurrent runs are serialized instead of cancelling an in-progress update. The release asset is created automatically if the `calendar-data` release does not yet exist.
 
 Maintained for 91.3 Ayclt FM and its HD channels.
