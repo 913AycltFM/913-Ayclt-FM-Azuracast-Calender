@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: azuracast-calendar
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -55,7 +55,7 @@ jobs:
           if event_count != end_event_count:
               raise SystemExit(f"Invalid calendar: VEVENT mismatch {event_count}/{end_event_count}.")
           if event_count == 0:
-              print("WARNING: no scheduled events were returned.")
+              raise SystemExit("Refusing to publish an empty calendar; check the AzuraCast API and schedules.")
 
           uids = [line[4:] for line in lines if line.startswith("UID:")]
           if len(uids) != event_count:
@@ -73,6 +73,28 @@ jobs:
 
           if timestamp_fields != event_count * 3:
               raise SystemExit("Invalid calendar: unexpected timestamp field count.")
+
+          # Validate required fields and ensure every event has a positive duration.
+          events = []
+          current = None
+          for line in lines:
+              if line == "BEGIN:VEVENT":
+                  current = {}
+              elif line == "END:VEVENT" and current is not None:
+                  required = ("UID", "DTSTART", "DTEND", "DTSTAMP", "SUMMARY")
+                  missing = [key for key in required if key not in current]
+                  if missing:
+                      raise SystemExit("Invalid VEVENT: missing " + ", ".join(missing))
+                  if current["DTEND"] <= current["DTSTART"]:
+                      raise SystemExit("Invalid VEVENT: DTEND must be after DTSTART.")
+                  events.append(current)
+                  current = None
+              elif current is not None and ":" in line and not line.startswith(" "):
+                  key, value = line.split(":", 1)
+                  current[key.split(";", 1)[0]] = value
+
+          if len(events) != event_count:
+              raise SystemExit("Invalid calendar: failed to parse every VEVENT.")
 
           print(f"Validated calendar: {event_count} VEVENT(s), {p.stat().st_size} bytes.")
           print("===== CALENDAR VALIDATION PASSED =====")
@@ -97,8 +119,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Uploading azuracast_schedule.ics to release calendar-data..."
+          echo "Publishing azuracast_schedule.ics to release calendar-data..."
+          if ! gh release view calendar-data >/dev/null 2>&1; then
+            gh release create calendar-data --title "Calendar Feed" --notes "Automatically updated AzuraCast iCalendar feed."
+          fi
           gh release upload calendar-data azuracast_schedule.ics --clobber
-          echo "Release asset upload completed successfully."
+          echo "Release asset published successfully."
           gh release view calendar-data --json name,tagName,url,assets
           echo "===== CALENDAR UPDATE COMPLETE ====="
