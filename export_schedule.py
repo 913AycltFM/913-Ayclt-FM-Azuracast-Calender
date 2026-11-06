@@ -285,7 +285,7 @@ def get_streamer_details(event, profiles):
 def unfold_ical_lines(raw_lines):
     unfolded = []
     for line in raw_lines:
-        if line.startswith((" ", "\\t")) and unfolded:
+        if line.startswith((" ", "\t")) and unfolded:
             unfolded[-1] += line[1:]
         else:
             unfolded.append(line)
@@ -324,7 +324,10 @@ def preserve_unchanged_dtstamps(calendar_lines, previous_events):
         if in_event:
             current.append((index, line))
         if line == "END:VEVENT" and in_event:
-            unfolded = unfold_ical_lines([item[1] for item in current])
+            raw_event_lines = []
+            for _, event_line in current:
+                raw_event_lines.extend(event_line.splitlines())
+            unfolded = unfold_ical_lines(raw_event_lines)
             properties = {}
             for item in unfolded:
                 if ":" in item and item not in ("BEGIN:VEVENT", "END:VEVENT"):
