@@ -37,9 +37,6 @@ def fold(line):
 def download_and_resize(source_url):
     filename = hashlib.sha256(source_url.encode("utf-8")).hexdigest()[:20] + ".jpg"
     output = COVER_DIR / filename
-    if output.exists():
-        return f"{RAW_BASE}/{filename}"
-
     request = urllib.request.Request(
         source_url,
         headers={"User-Agent": "913AycltFM-Event-Cover-Generator/1.0"},
