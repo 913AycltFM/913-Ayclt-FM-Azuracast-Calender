@@ -35,8 +35,10 @@ jobs:
         run: |
           echo "===== CALENDAR UPDATE START ====="
           echo "UTC time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          python -m py_compile export_schedule.py
+          python -m pip install --disable-pip-version-check Pillow
+          python -m py_compile export_schedule.py generate_event_covers.py
           python export_schedule.py
+          python generate_event_covers.py
 
           python - <<'PY'
           from pathlib import Path
@@ -109,7 +111,7 @@ jobs:
           if git diff --quiet -- azuracast_schedule.ics; then
             echo "Calendar content did not change; no commit needed."
           else
-            git add azuracast_schedule.ics
+            git add azuracast_schedule.ics event_covers/
             git commit -m "chore: update AzuraCast calendar"
             git push origin HEAD:main
             echo "Calendar commit pushed successfully."
