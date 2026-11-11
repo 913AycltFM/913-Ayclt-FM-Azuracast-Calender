@@ -108,8 +108,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- azuracast_schedule.ics; then
-            echo "Calendar content did not change; no commit needed."
+          if [ -z "$(git status --porcelain -- azuracast_schedule.ics event_covers/)" ]; then
+            echo "Calendar and event covers did not change; no commit needed."
           else
             git add azuracast_schedule.ics event_covers/
             git commit -m "chore: update AzuraCast calendar"
