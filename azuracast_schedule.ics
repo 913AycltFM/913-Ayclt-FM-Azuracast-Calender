@@ -316,4 +316,30 @@ DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
 IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
  reamer/3/art
 END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-11-1795219200-1795233600@913aycltfm
+DTSTAMP:20261114T023018Z
+DTSTART:20261121T000000Z
+DTEND:20261121T040000Z
+SUMMARY:[91.3 Ayclt FM] DJ Nicko
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /7/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/7/art
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-2-2-1795226400-1795230000@913aycltfm
+DTSTAMP:20261114T023018Z
+DTSTART:20261121T020000Z
+DTEND:20261121T030000Z
+SUMMARY:[91.3 Ayclt FM HD2] Deep Cuts With Steve Habig
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm_hd2
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/static/uploads/91.3_ay
+ clt_fm_hd2/background.1779890739.png"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/static/uploads/9
+ 1.3_ayclt_fm_hd2/background.1779890739.png
+END:VEVENT
 END:VCALENDAR
