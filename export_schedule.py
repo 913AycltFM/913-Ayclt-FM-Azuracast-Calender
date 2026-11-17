@@ -12,10 +12,11 @@ FALLBACK_COVER_URLS = {
     "91.3_ayclt_fm": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/background.1779890712.png",
     "91.3_ayclt_fm_hd2": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd2/background.1779890739.png",
     "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd3/background.1779890763.png",
+    "91.3_ayclt_fm_hd4": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd4/background.1794880715.jpg",
 }
 OUTPUT_FILE = "azuracast_schedule.ics"
 API_KEY = os.environ.get("AZURACAST_API_KEY", "")
-ALLOWED_SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3"]
+ALLOWED_SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3", "91.3_ayclt_fm_hd4"]
 WINDOW_HOURS = 24 * 7
 HTTP_TIMEOUT = 30
 HTTP_RETRIES = 3
