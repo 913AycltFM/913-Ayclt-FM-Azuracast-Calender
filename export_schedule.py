@@ -9,9 +9,9 @@ from datetime import datetime, timedelta, timezone
 
 AZURACAST_URL = "https://radio.913aycltfm.com"
 FALLBACK_COVER_URLS = {
-    "91.3_ayclt_fm": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/background.1779890712.png",
-    "91.3_ayclt_fm_hd2": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd2/background.1779890739.png",
-    "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd3/background.1779890763.png",
+    "91.3_ayclt_fm": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm/background.1794491246.jpg",
+    "91.3_ayclt_fm_hd2": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd2/background.1794491282.jpg",
+    "91.3_ayclt_fm_hd3": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd3/background.1794491309.jpg",
     "91.3_ayclt_fm_hd4": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd4/background.1794880715.jpg",
 }
 OUTPUT_FILE = "azuracast_schedule.ics"
