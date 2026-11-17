@@ -1,6 +1,6 @@
 # 91.3 Ayclt FM — AzuraCast Calendar
 
-Automated rolling 7-day programming calendar for 91.3 Ayclt FM, HD2, and HD3. The calendar is generated from the AzuraCast API and can be subscribed to by calendar applications.
+Automated rolling 7-day programming calendar for 91.3 Ayclt FM, HD2, HD3, and HD4. The calendar is generated from the AzuraCast API and can be subscribed to by calendar applications.
 
 ## Included stations
 
@@ -9,6 +9,7 @@ Only these three AzuraCast stations are included:
 - 91.3 Ayclt FM
 - 91.3 Ayclt FM HD2
 - 91.3 Ayclt FM HD3
+- 91.3 Ayclt FM HD4
 
 
 ## Automatic updates
@@ -21,7 +22,7 @@ GitHub Actions runs the **Update AzuraCast Calendar** workflow every five minute
 
 The workflow can also be started manually from **Actions → Update AzuraCast Calendar → Run workflow**.
 
-Each run fetches the upcoming seven days of schedules for all three stations, rebuilds the iCalendar file, validates it, and commits the updated file only when event data changes. Unchanged events retain their original `DTSTAMP`, preventing needless commits every five minutes. The workflow does not publish an empty calendar if the schedule API unexpectedly returns no events. GitHub may delay scheduled workflows during busy periods, so five minutes is the configured interval, not a guaranteed exact execution time.
+Each run fetches the upcoming seven days of schedules for all four stations, rebuilds the iCalendar file, validates it, and commits the updated file only when event data changes. Unchanged events retain their original `DTSTAMP`, preventing needless commits every five minutes. The workflow does not publish an empty calendar if the schedule API unexpectedly returns no events. GitHub may delay scheduled workflows during busy periods, so five minutes is the configured interval, not a guaranteed exact execution time.
 
 ## Generated calendar
 
