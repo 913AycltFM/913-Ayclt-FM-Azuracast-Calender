@@ -4,7 +4,7 @@ Automated rolling 7-day programming calendar for 91.3 Ayclt FM, HD2, HD3, and HD
 
 ## Included stations
 
-Only these three AzuraCast stations are included:
+Only these four AzuraCast stations are included:
 
 - 91.3 Ayclt FM
 - 91.3 Ayclt FM HD2
