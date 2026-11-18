@@ -38,11 +38,11 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
 <script>
 (() => {
  const base='https://radio.913aycltfm.com';
- const stations=[
-   {name:'91.3 Ayclt FM',slug:'91.3_ayclt_fm'},
-   {name:'91.3 Ayclt FM HD2',slug:'91.3_ayclt_fm_hd2'},
-   {name:'91.3 Ayclt FM HD3',slug:'91.3_ayclt_fm_hd3'},
-   {name:'91.3 Ayclt FM HD4',slug:'91.3_ayclt_fm_hd4'}
+ const stationShortcodes=[
+   {name:'91.3 Ayclt FM',shortcode:'91.3_ayclt_fm'},
+   {name:'91.3 Ayclt FM HD2',shortcode:'91.3_ayclt_fm_hd2'},
+   {name:'91.3 Ayclt FM HD3',shortcode:'91.3_ayclt_fm_hd3'},
+   {name:'91.3 Ayclt FM HD4',shortcode:'91.3_ayclt_fm_hd4'}
  ];
  const container=document.getElementById('stations');
  const status=document.getElementById('status');
@@ -70,7 +70,7 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
    grid.className='grid';
    section.append(heading,grid);
    try{
-     const endpoint=base+'/api/station/'+encodeURIComponent(station.slug)+'/streamers';
+     const endpoint=base+'/api/station/'+encodeURIComponent(station.id)+'/streamers';
      const response=await fetch(endpoint,{headers:{Accept:'application/json'},cache:'no-store'});
      if(!response.ok) throw new Error('HTTP '+response.status);
      const profiles=streamerList(await response.json());
@@ -94,7 +94,7 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
        const img=document.createElement('img');
        img.loading='lazy';
        img.alt='Artwork for '+name;
-       img.src=base+'/api/station/'+encodeURIComponent(station.slug)+'/streamer/'+encodeURIComponent(id)+'/art';
+       img.src=base+'/api/station/'+encodeURIComponent(station.id)+'/streamer/'+encodeURIComponent(id)+'/art';
        img.onerror=()=>{img.onerror=null;img.src=fallback;};
        const info=document.createElement('div');
        info.className='dj-info';
@@ -108,20 +108,34 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
      });
      return {section,count:valid.length,error:false};
    }catch(error){
-     console.error('AzuraCast streamer API ('+station.slug+'):',error);
+     console.error('AzuraCast streamer API ('+station.shortcode+'):',error);
      grid.append(makeEmpty('Could not load streamer profiles for this station. The AzuraCast API may be unavailable or may block requests from this website.'));
      return {section,count:0,error:true};
    }
  }
- Promise.all(stations.map(loadStation)).then(results=>{
+ async function resolveStationIds(){
+   const response=await fetch(base+'/api/stations',{headers:{Accept:'application/json'},cache:'no-store'});
+   if(!response.ok) throw new Error('Station list HTTP '+response.status);
+   const data=await response.json();
+   const list=Array.isArray(data)?data:
+     (data && Array.isArray(data.stations)?data.stations:
+     (data && Array.isArray(data.data)?data.data:[]));
+   if(!list.length) throw new Error('AzuraCast returned no station list');
+   return stationShortcodes.map(wanted=>{
+     const match=list.find(item=>item && item.shortcode===wanted.shortcode);
+     if(!match || match.id===undefined) throw new Error('Station not found in AzuraCast: '+wanted.shortcode);
+     return {...wanted,id:match.id};
+   });
+ }
+ resolveStationIds().then(stations=>Promise.all(stations.map(loadStation))).then(results=>{
    container.replaceChildren(...results.map(result=>result.section));
    const total=results.reduce((sum,result)=>sum+result.count,0);
    const failed=results.filter(result=>result.error).length;
    status.textContent=total+' streamer profile(s) across 4 stations'+(failed?' · '+failed+' station API request(s) failed':'');
  }).catch(error=>{
-   console.error('Unable to render AzuraCast streamer profiles:',error);
-   container.replaceChildren(makeEmpty('Streamer artwork could not be loaded right now.'));
-   status.textContent='Artwork could not load';
+   console.error('Unable to load AzuraCast station/streamer data:',error);
+   container.replaceChildren(makeEmpty('Could not load station data from AzuraCast. Check the browser console for an API or CORS error.'));
+   status.textContent='AzuraCast data could not load';
  });
 })();
 </script>
