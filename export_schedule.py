@@ -443,7 +443,7 @@ def main():
         })
     with open(STREAMERS_FILE, "w", encoding="utf-8") as handle:
         json.dump(public_streamers, handle, ensure_ascii=False, indent=2)
-        handle.write("\\n")
+        handle.write("\n")
     print(f"Published streamer index: {STREAMERS_FILE}")
 
     events.sort(key=lambda item: (item[0], item[2], item[1]))
