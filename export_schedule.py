@@ -15,6 +15,7 @@ FALLBACK_COVER_URLS = {
     "91.3_ayclt_fm_hd4": f"{AZURACAST_URL}/static/uploads/91.3_ayclt_fm_hd4/background.1794880715.jpg",
 }
 OUTPUT_FILE = "azuracast_schedule.ics"
+STREAMERS_FILE = "streamers.json"
 API_KEY = os.environ.get("AZURACAST_API_KEY", "")
 ALLOWED_SHORTCODES = ["91.3_ayclt_fm", "91.3_ayclt_fm_hd2", "91.3_ayclt_fm_hd3", "91.3_ayclt_fm_hd4"]
 WINDOW_HOURS = 24 * 7
@@ -412,6 +413,38 @@ def main():
             totals[key] += counts[key]
         print(f"  Events added: {counts['added']}")
         print(f"  Skipped: invalid={counts['invalid']}, expired={counts['expired']}, out_of_window={counts['out_of_window']}, duplicate={counts['duplicate']}")
+
+    # Publish a safe, public-facing streamer index. The API key is used only
+    # by this server-side workflow and is never written into the JSON file.
+    public_streamers = {"stations": []}
+    for station_id, station in stations.items():
+        profiles = []
+        for profile in streamers_by_station.get(station_id, []):
+            streamer_id = first_value(profile.get("id"))
+            if not streamer_id:
+                continue
+            name = first_value(
+                profile.get("display_name"), profile.get("displayName"),
+                profile.get("name"), profile.get("username"), f"DJ {streamer_id}"
+            )
+            profiles.append({
+                "id": str(streamer_id),
+                "name": str(name),
+                "art_url": (
+                    f"{AZURACAST_URL}/api/station/"
+                    f"{urllib.parse.quote(str(station_id), safe='')}/streamer/"
+                    f"{urllib.parse.quote(str(streamer_id), safe='')}/art"
+                )
+            })
+        public_streamers["stations"].append({
+            "name": station["name"],
+            "shortcode": station["shortcode"],
+            "streamers": profiles
+        })
+    with open(STREAMERS_FILE, "w", encoding="utf-8") as handle:
+        json.dump(public_streamers, handle, ensure_ascii=False, indent=2)
+        handle.write("\\n")
+    print(f"Published streamer index: {STREAMERS_FILE}")
 
     events.sort(key=lambda item: (item[0], item[2], item[1]))
     uids = set()
