@@ -37,31 +37,16 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
 <footer>91.3 Ayclt FM · Streamer artwork and station data supplied by AzuraCast</footer>
 <script>
 (() => {
- const base='https://radio.913aycltfm.com';
- const stationShortcodes=[
-   {name:'91.3 Ayclt FM',shortcode:'91.3_ayclt_fm'},
-   {name:'91.3 Ayclt FM HD2',shortcode:'91.3_ayclt_fm_hd2'},
-   {name:'91.3 Ayclt FM HD3',shortcode:'91.3_ayclt_fm_hd3'},
-   {name:'91.3 Ayclt FM HD4',shortcode:'91.3_ayclt_fm_hd4'}
- ];
  const container=document.getElementById('stations');
  const status=document.getElementById('status');
  const fallback='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Crect width=%22400%22 height=%22400%22 fill=%22%231b2b43%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23aab8cc%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3E91.3 Ayclt FM%3C/text%3E%3C/svg%3E';
- function streamerList(data){
-   if(Array.isArray(data)) return data;
-   if(data && Array.isArray(data.streamers)) return data.streamers;
-   if(data && Array.isArray(data.data)) return data.data;
-   if(data && Array.isArray(data.items)) return data.items;
-   if(data && Array.isArray(data.results)) return data.results;
-   return [];
+ function empty(message){
+   const node=document.createElement('div');
+   node.className='empty';
+   node.textContent=message;
+   return node;
  }
- function makeEmpty(message){
-   const empty=document.createElement('div');
-   empty.className='empty';
-   empty.textContent=message;
-   return empty;
- }
- async function loadStation(station){
+ function renderStation(station){
    const section=document.createElement('section');
    section.className='station';
    const heading=document.createElement('h3');
@@ -69,74 +54,49 @@ footer{text-align:center;padding:18px;color:var(--muted);border-top:1px solid va
    const grid=document.createElement('div');
    grid.className='grid';
    section.append(heading,grid);
-   try{
-     const endpoint=base+'/api/station/'+encodeURIComponent(station.id)+'/streamers';
-     const response=await fetch(endpoint,{headers:{Accept:'application/json'},cache:'no-store'});
-     if(!response.ok) throw new Error('HTTP '+response.status);
-     const profiles=streamerList(await response.json());
-     const seen=new Set();
-     const valid=profiles.filter(profile=>{
-       if(!profile || (profile.id===undefined && profile.streamer_id===undefined)) return false;
-       const id=String(profile.id??profile.streamer_id);
-       if(seen.has(id)) return false;
-       seen.add(id);
-       return true;
-     });
-     if(!valid.length){
-       grid.append(makeEmpty('No streamer profiles are currently listed for this station in AzuraCast.'));
-       return {section,count:0,error:false};
-     }
-     valid.forEach(profile=>{
-       const id=String(profile.id??profile.streamer_id);
-       const name=profile.display_name||profile.name||profile.username||profile.streamer_name||('DJ '+id);
-       const article=document.createElement('article');
-       article.className='dj';
-       const img=document.createElement('img');
-       img.loading='lazy';
-       img.alt='Artwork for '+name;
-       img.src=base+'/api/station/'+encodeURIComponent(station.id)+'/streamer/'+encodeURIComponent(id)+'/art';
-       img.onerror=()=>{img.onerror=null;img.src=fallback;};
-       const info=document.createElement('div');
-       info.className='dj-info';
-       const title=document.createElement('h4');
-       title.textContent=name;
-       const description=document.createElement('p');
-       description.textContent='AzuraCast streamer';
-       info.append(title,description);
-       article.append(img,info);
-       grid.append(article);
-     });
-     return {section,count:valid.length,error:false};
-   }catch(error){
-     console.error('AzuraCast streamer API ('+station.shortcode+'):',error);
-     grid.append(makeEmpty('Could not load streamer profiles for this station. The AzuraCast API may be unavailable or may block requests from this website.'));
-     return {section,count:0,error:true};
+   const profiles=Array.isArray(station.streamers)?station.streamers:[];
+   if(!profiles.length){
+     grid.append(empty('No streamer profiles were returned for this station by AzuraCast.'));
+     return {section,count:0};
    }
- }
- async function resolveStationIds(){
-   const response=await fetch(base+'/api/stations',{headers:{Accept:'application/json'},cache:'no-store'});
-   if(!response.ok) throw new Error('Station list HTTP '+response.status);
-   const data=await response.json();
-   const list=Array.isArray(data)?data:
-     (data && Array.isArray(data.stations)?data.stations:
-     (data && Array.isArray(data.data)?data.data:[]));
-   if(!list.length) throw new Error('AzuraCast returned no station list');
-   return stationShortcodes.map(wanted=>{
-     const match=list.find(item=>item && item.shortcode===wanted.shortcode);
-     if(!match || match.id===undefined) throw new Error('Station not found in AzuraCast: '+wanted.shortcode);
-     return {...wanted,id:match.id};
+   profiles.forEach(profile=>{
+     const article=document.createElement('article');
+     article.className='dj';
+     const img=document.createElement('img');
+     img.loading='lazy';
+     img.alt='Artwork for '+(profile.name||'streamer');
+     img.src=profile.art_url||fallback;
+     img.onerror=()=>{img.onerror=null;img.src=fallback;};
+     const info=document.createElement('div');
+     info.className='dj-info';
+     const title=document.createElement('h4');
+     title.textContent=profile.name||('DJ '+profile.id);
+     const description=document.createElement('p');
+     description.textContent='AzuraCast streamer';
+     info.append(title,description);
+     article.append(img,info);
+     grid.append(article);
    });
+   return {section,count:profiles.length};
  }
- resolveStationIds().then(stations=>Promise.all(stations.map(loadStation))).then(results=>{
-   container.replaceChildren(...results.map(result=>result.section));
-   const total=results.reduce((sum,result)=>sum+result.count,0);
-   const failed=results.filter(result=>result.error).length;
-   status.textContent=total+' streamer profile(s) across 4 stations'+(failed?' · '+failed+' station API request(s) failed':'');
- }).catch(error=>{
-   console.error('Unable to load AzuraCast station/streamer data:',error);
-   container.replaceChildren(makeEmpty('Could not load station data from AzuraCast. Check the browser console for an API or CORS error.'));
-   status.textContent='AzuraCast data could not load';
- });
+ fetch('./streamers.json?'+Date.now(),{cache:'no-store'})
+   .then(response=>{
+     if(!response.ok) throw new Error('streamers.json HTTP '+response.status);
+     return response.json();
+   })
+   .then(data=>{
+     const stations=Array.isArray(data.stations)?data.stations:[];
+     if(!stations.length) throw new Error('No station data in streamers.json');
+     const results=stations.map(renderStation);
+     container.replaceChildren(...results.map(result=>result.section));
+     const total=results.reduce((sum,result)=>sum+result.count,0);
+     status.textContent=total+' streamer profile(s) across '+stations.length+' stations';
+   })
+   .catch(error=>{
+     console.error('Unable to load published streamer index:',error);
+     container.replaceChildren(empty('Streamer data is not available yet. The GitHub Actions calendar update must run successfully first.'));
+     status.textContent='Streamer data could not load';
+   });
 })();
 </script>
 </body>
