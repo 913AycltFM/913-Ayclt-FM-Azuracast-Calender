@@ -1,0 +1,112 @@
+{
+  "stations": [
+    {
+      "name": "91.3 Ayclt FM",
+      "shortcode": "91.3_ayclt_fm",
+      "streamers": [
+        {
+          "id": "2",
+          "name": "91.3 Ayclt FM",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/2/art"
+        },
+        {
+          "id": "1",
+          "name": "91.3 Ayclt FM Mobile Studio",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/1/art"
+        },
+        {
+          "id": "17",
+          "name": "DJ Brandon Stone",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/17/art"
+        },
+        {
+          "id": "5",
+          "name": "DJ CoyoteDave",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/5/art"
+        },
+        {
+          "id": "15",
+          "name": "DJ Beacon",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/15/art"
+        },
+        {
+          "id": "9",
+          "name": "DJ Ryan Fancher",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/9/art"
+        },
+        {
+          "id": "11",
+          "name": "DJ Mike B",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/11/art"
+        },
+        {
+          "id": "6",
+          "name": "DJ WolfDen",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/6/art"
+        },
+        {
+          "id": "4",
+          "name": "JB In The Morning ",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/4/art"
+        },
+        {
+          "id": "16",
+          "name": "DJ New York Rose",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/16/art"
+        },
+        {
+          "id": "7",
+          "name": "DJ Nicko",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/7/art"
+        },
+        {
+          "id": "8",
+          "name": "DJ robert",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/8/art"
+        },
+        {
+          "id": "3",
+          "name": "Rock Doc",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/3/art"
+        },
+        {
+          "id": "18",
+          "name": "DJ Shawn Smirh",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/18/art"
+        },
+        {
+          "id": "10",
+          "name": "The Milton Show",
+          "art_url": "https://radio.913aycltfm.com/api/station/1/streamer/10/art"
+        }
+      ]
+    },
+    {
+      "name": "91.3 Ayclt FM HD2",
+      "shortcode": "91.3_ayclt_fm_hd2",
+      "streamers": [
+        {
+          "id": "12",
+          "name": "91.3 Ayclt FM HD2 Mobile Studio",
+          "art_url": "https://radio.913aycltfm.com/api/station/2/streamer/12/art"
+        }
+      ]
+    },
+    {
+      "name": "91.3 Ayclt FM HD3",
+      "shortcode": "91.3_ayclt_fm_hd3",
+      "streamers": [
+        {
+          "id": "13",
+          "name": "91.3 Ayclt FM HD3 Mobile Studio",
+          "art_url": "https://radio.913aycltfm.com/api/station/3/streamer/13/art"
+        }
+      ]
+    },
+    {
+      "name": "91.3 Ayclt FM HD4",
+      "shortcode": "91.3_ayclt_fm_hd4",
+      "streamers": []
+    }
+  ]
+}
