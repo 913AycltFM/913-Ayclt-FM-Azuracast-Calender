@@ -107,7 +107,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           if git diff --quiet -- azuracast_schedule.ics streamers.json; then
-            echo "Calendar content did not change; no commit needed."
+            echo "Calendar and streamer index content did not change; no commit needed."
           else
             git add azuracast_schedule.ics streamers.json
             git commit -m "chore: update AzuraCast calendar"
