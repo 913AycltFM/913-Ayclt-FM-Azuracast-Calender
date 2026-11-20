@@ -5,19 +5,6 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:91.3 Ayclt FM
 BEGIN:VEVENT
-UID:ayclt-1-5-1795100400-1795114800@913aycltfm
-DTSTAMP:20261118T202533Z
-DTSTART:20261119T150000Z
-DTEND:20261119T190000Z
-SUMMARY:[91.3 Ayclt FM] Rock Doc
-URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
- /3/art"\n+++
-IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
- reamer/3/art
-END:VEVENT
-BEGIN:VEVENT
 UID:ayclt-1-11-1795132800-1795147200@913aycltfm
 DTSTAMP:20261118T202533Z
 DTSTART:20261120T000000Z
@@ -328,5 +315,18 @@ DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
  /3/art"\n+++
 IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
  reamer/3/art
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-11-1795737600-1795752000@913aycltfm
+DTSTAMP:20261120T005430Z
+DTSTART:20261127T000000Z
+DTEND:20261127T040000Z
+SUMMARY:[91.3 Ayclt FM] DJ Nicko
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /7/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/7/art
 END:VEVENT
 END:VCALENDAR
