@@ -5,19 +5,6 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:91.3 Ayclt FM
 BEGIN:VEVENT
-UID:ayclt-1-9-1795363200-1795370400@913aycltfm
-DTSTAMP:20261118T202533Z
-DTSTART:20261122T160000Z
-DTEND:20261122T180000Z
-SUMMARY:[91.3 Ayclt FM] DJ WolfDen
-URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
- /6/art"\n+++
-IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
- reamer/6/art
-END:VEVENT
-BEGIN:VEVENT
 UID:ayclt-2-2-1795399200-1795402800@913aycltfm
 DTSTAMP:20261118T202533Z
 DTSTART:20261123T020000Z
@@ -315,5 +302,18 @@ DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/static/uploads/91.3_ay
  clt_fm_hd2/background.1794491282.jpg"\n+++
 IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/static/uploads/9
  1.3_ayclt_fm_hd2/background.1794491282.jpg
+END:VEVENT
+BEGIN:VEVENT
+UID:ayclt-1-9-1795968000-1795975200@913aycltfm
+DTSTAMP:20261122T202851Z
+DTSTART:20261129T160000Z
+DTEND:20261129T180000Z
+SUMMARY:[91.3 Ayclt FM] DJ WolfDen
+URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
+DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
+ /6/art"\n+++
+IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
+ reamer/6/art
 END:VEVENT
 END:VCALENDAR
