@@ -5,19 +5,6 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:91.3 Ayclt FM
 BEGIN:VEVENT
-UID:ayclt-1-11-1795824000-1795838400@913aycltfm
-DTSTAMP:20261121T035506Z
-DTSTART:20261128T000000Z
-DTEND:20261128T040000Z
-SUMMARY:[91.3 Ayclt FM] DJ Nicko
-URL:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-LOCATION:https://radio.913aycltfm.com/public/91.3_ayclt_fm
-DESCRIPTION:+++\ncover="https://radio.913aycltfm.com/api/station/1/streamer
- /7/art"\n+++
-IMAGE;VALUE=URI;DISPLAY=BADGE:https://radio.913aycltfm.com/api/station/1/st
- reamer/7/art
-END:VEVENT
-BEGIN:VEVENT
 UID:ayclt-1-7-1795903200-1795910400@913aycltfm
 DTSTAMP:20261121T235447Z
 DTSTART:20261128T220000Z
